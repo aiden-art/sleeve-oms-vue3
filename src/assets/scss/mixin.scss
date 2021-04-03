@@ -1,0 +1,58 @@
+//滚动条样式
+@mixin scrollstyle {
+  &::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+  }
+  &::-webkit-scrollbar-track {
+    width: 6px !important;
+    border-radius: 10px !important;
+    background-color: #ffffff !important;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px !important;
+    width: 6px !important;
+    background-color: #9b9fa6 !important;
+  }
+}
+
+//文字无法选中
+@mixin user_select_none {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+//flex布局
+@mixin flex($direction: row, $justify: null, $align: null, $flex-wrap: null) {
+  display: flex;
+  @if ($direction!=null) {
+    flex-direction: $direction;
+  }
+  @if ($justify!=null) {
+    justify-content: $justify;
+  }
+  @if ($align!=null) {
+    align-items: $align;
+  }
+  @if ($flex-wrap != null) {
+    flex-wrap: $flex-wrap;
+  }
+}
+
+//文字溢出显示省略号
+@mixin ellipsis($rowCount: 1) {
+  @if $rowCount <=1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } @else {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: $rowCount;
+    -webkit-box-orient: vertical;
+  }
+}

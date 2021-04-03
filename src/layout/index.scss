@@ -1,0 +1,22 @@
+.home-page {
+  height: 100%;
+}
+.home-aside {
+  width: $sidebar-width !important;
+  height: 100%;
+  background-color: $sidebar-background;
+}
+.home-header {
+  padding-left: 20px;
+  background: #eef4f9;
+  @include flex(row, null, center);
+  .iconmenufold {
+    font-size: 18px;
+    font-weight: 600;
+    margin-right: 20px;
+    cursor: pointer;
+    &:hover {
+      color: $theme;
+    }
+  }
+}

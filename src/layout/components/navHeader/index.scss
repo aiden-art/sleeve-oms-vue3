@@ -1,0 +1,8 @@
+.nav-header {
+  width: 100%;
+  height: 100%;
+  @include flex(row, space-between, center);
+  &__right {
+    @include flex(row, center, center);
+  }
+}
