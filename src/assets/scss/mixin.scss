@@ -17,7 +17,7 @@
 }
 
 //文字无法选中
-@mixin user_select_none {
+@mixin userselect-none {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;

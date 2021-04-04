@@ -16,15 +16,14 @@
         :class="isHomePath(item.path) ? '' : 'menu-item-link'"
       >
         <el-menu-item :index="item.path">
+          <i :class="item.meta.icon"></i>
           <template #title>
-            <i :class="item.meta.icon"></i>
             <span>{{ item.meta.title }}</span>
           </template>
         </el-menu-item>
       </app-link>
     </template>
-
-    <el-submenu v-else ref="subMenu" :index="item.path" popper-append-to-body>
+    <el-submenu v-else ref="subMenu" :index="item.path">
       <template #title>
         <i :class="item.meta.icon"></i>
         <span>{{ item.meta.title }}</span>

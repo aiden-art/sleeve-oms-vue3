@@ -12,7 +12,6 @@
       :collapse="isCollapse"
       background-color="#192a5e"
       :unique-opened="false"
-      :collapse-transition="false"
       text-color="rgba(196,201,210,1)"
       active-text-color="#1890ff"
       mode="vertical"
@@ -44,6 +43,12 @@
   export default defineComponent({
     name: 'Sidebar',
     components: { SidebarItem },
+    props: {
+      isCollapse: {
+        type: Boolean,
+        default: false,
+      },
+    },
     setup() {
       const router = useRouter().options.routes
 
@@ -62,9 +67,8 @@
       return {
         routes,
         activeMenu,
-        isCollapse: false,
       }
     },
   })
 </script>
-<style scoped lang="scss" src="./index.scss"></style>
+<style lang="scss" src="./index.scss"></style>

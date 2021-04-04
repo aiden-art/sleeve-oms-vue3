@@ -1,0 +1,8 @@
+//重写element-ui样式
+@import './variable.scss';
+.el-menu-item.is-active {
+  color: $theme !important;
+  &.el-menu-item .iconfont {
+    color: $theme !important;
+  }
+}

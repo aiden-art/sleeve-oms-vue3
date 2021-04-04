@@ -1,7 +1,9 @@
 .side-bar {
-  width: $sidebar-width;
   height: 100%;
-  :deep(.is-opened) {
+  .el-menu {
+    border: none;
+  }
+  .is-opened {
     .el-menu--inline {
       background: $menuItem-bg !important;
       &:hover {
@@ -21,13 +23,7 @@
       }
     }
   }
-  :deep(.is-active) {
-    color: $theme !important;
-    &.el-menu-item .iconfont {
-      color: $theme !important;
-    }
-  }
-  :deep(.menu-item-link) {
+  .menu-item-link {
     .el-menu-item {
       position: relative;
       padding-left: 60px !important;
@@ -55,6 +51,19 @@
           top: 23px;
         }
       }
+    }
+  }
+  .el-menu--collapse {
+    .el-menu-item span,
+    .el-submenu .el-submenu__title span {
+      height: 0;
+      width: 0;
+      overflow: hidden;
+      visibility: hidden;
+      display: inline-block;
+    }
+    .is-active > .el-submenu__title > i {
+      color: $theme !important;
     }
   }
 }
