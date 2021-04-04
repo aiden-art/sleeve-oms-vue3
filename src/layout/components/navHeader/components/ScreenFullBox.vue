@@ -16,46 +16,38 @@
 </template>
 
 <script lang="ts">
-  import screenfull from 'screenfull'
-  import { ElMessage } from 'element-plus'
+  import screenfull, { Screenfull } from 'screenfull'
   import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
   export default defineComponent({
     name: 'SceenFull',
     setup() {
-      const isFullscreen = ref(false)
-      const change = () => {
-        isFullscreen.value = screenfull.isFullscreen
-      }
-      const destory = () => {
-        if (screenfull.enabled) {
-          screenfull.off('change', change)
-        }
-      }
+      let isFullscreen = ref(false)
       const handleFullScreen = () => {
-        if (!screenfull.enabled) {
-          ElMessage.warning({
-            message: 'you browser can not work',
-            type: 'warning',
-          })
-          return false
-        }
+        if (!screenfull.isEnabled) return
         screenfull.toggle()
+      }
+      const change = () => {
+        isFullscreen.value = (screenfull as Screenfull).isFullscreen
       }
       const init = () => {
         if (screenfull.isEnabled) {
           screenfull.on('change', change)
         }
       }
+      const destroy = () => {
+        if (screenfull.isEnabled) {
+          screenfull.off('change', change)
+        }
+      }
       onMounted(() => {
         init()
       })
       onUnmounted(() => {
-        destory()
+        destroy()
       })
-
       return {
-        handleFullScreen,
         isFullscreen,
+        handleFullScreen,
       }
     },
   })
