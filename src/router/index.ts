@@ -70,7 +70,7 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: '/banner/list',
         name: 'BannerList',
-        component: () => import('../components/HelloWorld.vue'),
+        component: () => import('@/views/banner/bannerList.vue'),
         meta: {
           icon: '',
           title: 'banner列表',
@@ -80,7 +80,7 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: '/banner/add',
         name: 'BannerAdd',
-        component: () => import('../components/HelloWorld.vue'),
+        component: () => import('@/views/banner/bannerAdd.vue'),
         meta: {
           icon: '',
           title: '创建banner',

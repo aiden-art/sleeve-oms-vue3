@@ -63,7 +63,6 @@
       })
 
       const routes = computed(() => increaseIndexes(router))
-      console.log(routes)
       return {
         routes,
         activeMenu,
