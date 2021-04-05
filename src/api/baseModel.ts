@@ -4,3 +4,9 @@ export interface BaseListModel<T> {
   page: number
   count: number
 }
+
+export interface BaseResponseModel {
+  code: number
+  message: string
+  request: string
+}
