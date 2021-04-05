@@ -6,8 +6,11 @@
  * @Description:vite配置文件
  */
 import { resolve } from 'path'
-import { defineConfig } from 'vite'
+import type { UserConfig, ConfigEnv } from 'vite'
+import { loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { createProxy } from './build/vite/proxy'
+import { wrapperEnv } from './build/utils'
 
 const pathResolve = (dir: string): string => {
   return resolve(__dirname, '.', dir)
@@ -15,17 +18,28 @@ const pathResolve = (dir: string): string => {
 const alias: Record<string, string> = {
   '@': pathResolve('src'),
 }
+
 // https://vitejs.dev/config/
-export default defineConfig({
-  resolve: {
-    alias,
-  },
-  plugins: [vue()],
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@import "./src/assets/scss/variable.scss";`,
+export default ({ mode }: ConfigEnv): UserConfig => {
+  const root: string = process.cwd()
+  const env = loadEnv(mode, root)
+  const viteEnv = wrapperEnv(env)
+  const { VITE_PROXY } = viteEnv
+  console.log(VITE_PROXY)
+  return {
+    resolve: {
+      alias,
+    },
+    plugins: [vue()],
+    server: {
+      proxy: createProxy(VITE_PROXY),
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: `@import "./src/assets/scss/variable.scss";`,
+        },
       },
     },
-  },
-})
+  }
+}
