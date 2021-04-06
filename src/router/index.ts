@@ -24,6 +24,20 @@ export const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: '/share',
+    name: 'Share',
+    component: layout,
+    meta: { icon: 'el-icon-reading', title: 'vue3演示', showLink: true },
+    children: [
+      {
+        path: '/share/setup',
+        name: 'SetUp',
+        component: () => import('../views/share/components/setup.vue'),
+        meta: { icon: '', title: 'setup选项', showLink: true },
+      },
+    ],
+  },
+  {
     path: '/clientData',
     name: 'ClientData',
     component: layout,
