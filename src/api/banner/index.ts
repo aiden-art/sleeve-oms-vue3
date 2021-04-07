@@ -29,6 +29,14 @@ class Banner {
       data,
     })
   }
+
+  //删除banner
+  async deleteBanner(id: number): Promise<AxiosResponse<BaseResponseModel>> {
+    return _axios({
+      method: 'delete',
+      url: `/v1/banner/${id}`,
+    })
+  }
 }
 
 export default new Banner()

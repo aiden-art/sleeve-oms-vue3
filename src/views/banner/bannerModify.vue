@@ -51,8 +51,9 @@
         default: null,
       },
     },
-    setup(props) {
-      const formRef = ref<any>(null)
+    emits: ['on-back'],
+    setup(props, { emit }) {
+      const formRef = ref<HTMLDivElement | null>(null)
       const form = ref({
         name: '',
         title: '',
@@ -77,7 +78,14 @@
       }
 
       function resetForm() {
-        formRef.value.resetFields()
+        if (formRef.value) {
+          formRef.value.resetFields()
+        }
+      }
+
+      //返回
+      function back() {
+        emit('on-back')
       }
 
       getBannerDetail(props.bannerId)
@@ -87,8 +95,18 @@
         formRef,
         submitForm,
         resetForm,
+        back,
       }
     },
   })
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+  .modify-container {
+    &__header {
+      @include flex(row, space-between, center);
+    }
+    .back {
+      cursor: pointer;
+    }
+  }
+</style>
