@@ -1,42 +1,53 @@
-import { AxiosResponse } from 'axios'
-import _axios from '../../request'
-import { BannerModel } from './model'
-import { BaseListModel, BaseResponseModel } from '../baseModel'
+import $axios from '@/request'
+import { APIResponseType, BaseListModel, BasePageParams } from '../baseModel'
 
-class Banner {
-  //获取banner列表
-  async getBanners(data?: any): Promise<AxiosResponse<BaseListModel<BannerModel>>> {
-    return _axios({
-      method: 'get',
-      url: '/v1/banner/page',
-      params: data,
-    })
-  }
-
-  //查询banner详情
-  async getBannerDetail(id: number): Promise<AxiosResponse<BannerModel>> {
-    return _axios({
-      method: 'get',
-      url: `/v1/banner/${id}`,
-    })
-  }
-
-  //更新banner
-  async editBanner(id: number, data: any): Promise<AxiosResponse<BaseResponseModel>> {
-    return _axios({
-      method: 'put',
-      url: `/v1/banner/${id}`,
-      data,
-    })
-  }
-
-  //删除banner
-  async deleteBanner(id: number): Promise<AxiosResponse<BaseResponseModel>> {
-    return _axios({
-      method: 'delete',
-      url: `/v1/banner/${id}`,
-    })
-  }
+export interface BannerModel {
+  id: number
+  name: string
+  title: string
+  description: string
+  img: string
+  items?: BannerItemModel[]
+}
+export interface BannerItemModel {
+  id: number
+  name: string
+  img: string
+  keyword: string
+  type: number
+  bannerId: number
 }
 
-export default new Banner()
+//获取banner列表
+export const getBannersApi = (data?: BasePageParams): APIResponseType<BaseListModel<BannerModel>> => {
+  return $axios({
+    method: 'get',
+    url: '/v1/banner/list',
+    params: data,
+  })
+}
+
+//查询banner详情
+export const getBannerDetailApi = (id: number): APIResponseType<BannerModel> => {
+  return $axios({
+    method: 'get',
+    url: `/v1/banner/${id}`,
+  })
+}
+
+//更新banner
+export const editBannerApi = (data: BannerModel): APIResponseType<null> => {
+  return $axios({
+    method: 'post',
+    url: `/v1/banner/update`,
+    data,
+  })
+}
+
+//删除banner
+export const deleteBannerApi = (id: number): APIResponseType<null> => {
+  return $axios({
+    method: 'delete',
+    url: `/v1/banner/${id}`,
+  })
+}

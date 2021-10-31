@@ -19,13 +19,7 @@
               <el-input v-model="form.img" size="medium" placeholder="请填写主图"></el-input>
             </el-form-item>
             <el-form-item label="描述" prop="description">
-              <el-input
-                v-model="form.description"
-                size="medium"
-                type="textarea"
-                :rows="4"
-                placeholder="请输入描述"
-              >
+              <el-input v-model="form.description" size="medium" type="textarea" :rows="4" placeholder="请输入描述">
               </el-input>
             </el-form-item>
             <el-form-item class="submit">
@@ -39,74 +33,77 @@
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, ref } from 'vue'
-  import { ElMessage } from 'element-plus'
-  import banner from '../../api/banner'
+import { defineComponent, ref } from 'vue'
+import { ElMessage } from 'element-plus'
+import { BannerModel, editBannerApi, getBannerDetailApi } from '@/api/banner'
 
-  export default defineComponent({
-    props: {
-      bannerId: {
-        type: Number,
-        required: true,
-        default: null,
-      },
+export default defineComponent({
+  //banner编辑
+  name: 'BannerModify',
+  props: {
+    bannerId: {
+      type: Number,
+      required: true,
+      default: null,
     },
-    emits: ['on-back'],
-    setup(props, { emit }) {
-      const formRef = ref<HTMLDivElement | null>(null)
-      const form = ref({
-        name: '',
-        title: '',
-        img: '',
-        description: '',
-      })
+  },
+  emits: ['on-back'],
+  setup(props, { emit }) {
+    const formRef = ref<HTMLDivElement | null>(null)
+    const form = ref<BannerModel>({
+      id: 0,
+      img: '',
+      name: '',
+      title: '',
+      description: '',
+    })
 
-      //查询banner详情
-      async function getBannerDetail(id: number) {
-        let result = await banner.getBannerDetail(id)
-        form.value = result.data
+    //查询banner详情
+    async function getBannerDetail(id: number) {
+      let { data: response } = await getBannerDetailApi(id)
+      form.value = response.data
+    }
+
+    // 修改banner
+    async function editBanner(info: BannerModel) {
+      let result = await editBannerApi(info)
+      ElMessage.success(`${result.data.message}`)
+    }
+
+    function submitForm() {
+      editBanner(form.value!)
+    }
+
+    function resetForm() {
+      if (formRef.value) {
+        // formRef.value.resetFields()
       }
+    }
 
-      // 修改banner
-      async function editBanner(id: number, info: any) {
-        let result = await banner.editBanner(id, info)
-        ElMessage.success(`${result.data.message}`)
-      }
+    //返回
+    function back() {
+      emit('on-back')
+    }
 
-      function submitForm() {
-        editBanner(props.bannerId, form.value)
-      }
+    getBannerDetail(props.bannerId)
 
-      function resetForm() {
-        if (formRef.value) {
-          formRef.value.resetFields()
-        }
-      }
-
-      //返回
-      function back() {
-        emit('on-back')
-      }
-
-      getBannerDetail(props.bannerId)
-
-      return {
-        form,
-        formRef,
-        submitForm,
-        resetForm,
-        back,
-      }
-    },
-  })
+    return {
+      form,
+      formRef,
+      submitForm,
+      resetForm,
+      back,
+    }
+  },
+})
 </script>
 <style lang="scss">
-  .modify-container {
-    &__header {
-      @include flex(row, space-between, center);
-    }
-    .back {
-      cursor: pointer;
-    }
+.modify-container {
+  &__header {
+    @include flex(row, space-between, center);
   }
+  .back {
+    cursor: pointer;
+  }
+}
 </style>

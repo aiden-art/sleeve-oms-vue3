@@ -1,15 +1,15 @@
 import axios from 'axios'
 
-const _axios = axios.create({
+const $axios = axios.create({
   baseURL: '/',
   timeout: 5 * 1000,
 })
 
-_axios.interceptors.request.use((config) => {
+$axios.interceptors.request.use((config) => {
   return config
 })
 
-_axios.interceptors.response.use(
+$axios.interceptors.response.use(
   (res) => {
     return res
   },
@@ -18,4 +18,4 @@ _axios.interceptors.response.use(
   }
 )
 
-export default _axios
+export default $axios

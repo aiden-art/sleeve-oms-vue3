@@ -27,58 +27,58 @@
       class="base-paganation"
       backgorund
       layout="prev,pager,next"
-      :page-size="paginationOption.pageSize || 10"
-      :total="paginationOption.total"
-      :current-page="paginationOption.currentPage || 1"
+      :page-size="pagination.pageSize || 10"
+      :total="pagination.total"
+      :current-page="pagination.currentPage || 1"
       @current-change="currentChange"
     >
     </el-pagination>
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, ref, PropType } from 'vue'
-  import { paginationOption, operateType, operateFunc } from '../../types'
-  export default defineComponent({
-    props: {
-      tableColumn: {
-        type: Array,
-        default: () => [],
-      },
-      tableData: {
-        type: Array,
-        default: () => [],
-      },
-      operate: {
-        type: Array as PropType<operateType[]>,
-        default: () => [],
-      },
-      isShowPagination: {
-        type: Boolean,
-        default: true,
-      },
-      paginationOption: {
-        type: Object as PropType<paginationOption>,
-        default: () => ({}),
-      },
+import { defineComponent, ref, PropType } from 'vue'
+import { paginationOption, operateType, operateFunc } from '@/types'
+export default defineComponent({
+  props: {
+    tableColumn: {
+      type: Array,
+      default: () => [],
     },
-    emits: ['current-change'],
-    setup(props, { emit }) {
-      const baseTableRef = ref(null)
-
-      function currentChange() {
-        emit('current-change')
-      }
-
-      function handleOperate(fnuc: operateFunc, index: number, row: Record<string, unknown>) {
-        fnuc(index, row)
-      }
-
-      return {
-        baseTableRef,
-        currentChange,
-        handleOperate,
-      }
+    tableData: {
+      type: Array,
+      default: () => [],
     },
-  })
+    operate: {
+      type: Array as PropType<operateType[]>,
+      default: () => [],
+    },
+    isShowPagination: {
+      type: Boolean,
+      default: true,
+    },
+    pagination: {
+      type: Object as PropType<paginationOption>,
+      default: () => ({}),
+    },
+  },
+  emits: ['current-change'],
+  setup(props, { emit }) {
+    const baseTableRef = ref(null)
+
+    function currentChange() {
+      emit('current-change')
+    }
+
+    function handleOperate(fnuc: operateFunc, index: number, row: Record<string, unknown>) {
+      fnuc(index, row)
+    }
+
+    return {
+      baseTableRef,
+      currentChange,
+      handleOperate,
+    }
+  },
+})
 </script>
 <style lang="scss"></style>
