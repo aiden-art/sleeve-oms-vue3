@@ -2,24 +2,36 @@
  * @Author: genfa.zeng
  * @Date: 2021-02-01 10:14:04
  * @LastEditors: genfa.zeng
- * @LastEditTime: 2021-02-01 15:06:53
+ * @LastEditTime: 2021-12-07 15:04:16
  * @Description:
  */
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import {
+  House,
+  Cellphone,
+  Picture,
+  Menu as MenuIcon,
+  Grid,
+  Present,
+  Suitcase,
+  Pouring,
+  Sunny,
+  IceCream,
+} from '@element-plus/icons'
 import layout from '../layout/index.vue'
 export const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
     component: layout,
-    meta: { icon: 'el-icon-s-home', title: '系统首页', showLink: true },
+    meta: { icon: House, title: '系统首页', showLink: true },
     redirect: '/dashboard',
     children: [
       {
         path: '/dashboard',
         name: 'Dashboard',
         component: () => import('../views/dashBoard/index.vue'),
-        meta: { icon: 'el-icon-s-home', title: '首页', showLink: true },
+        meta: { icon: House, title: '首页', showLink: true },
       },
     ],
   },
@@ -29,7 +41,7 @@ export const routes: Array<RouteRecordRaw> = [
     component: layout,
     redirect: '/clientData/orderList',
     meta: {
-      icon: 'el-icon-s-data',
+      icon: Cellphone,
       title: 'C端数据',
       showLink: true,
     },
@@ -62,7 +74,7 @@ export const routes: Array<RouteRecordRaw> = [
     component: layout,
     redirect: '/banner/list',
     meta: {
-      icon: 'el-icon-picture',
+      icon: Picture,
       title: 'Banner管理',
       showLink: true,
     },
@@ -95,7 +107,7 @@ export const routes: Array<RouteRecordRaw> = [
     component: layout,
     redirect: '/category/list',
     meta: {
-      icon: 'el-icon-files',
+      icon: MenuIcon,
       title: '分类管理',
       showLink: true,
     },
@@ -118,7 +130,7 @@ export const routes: Array<RouteRecordRaw> = [
     component: layout,
     redirect: '/grid/list',
     meta: {
-      icon: 'el-icon-s-grid',
+      icon: Grid,
       title: '六宫格管理',
       showLink: true,
     },
@@ -141,7 +153,7 @@ export const routes: Array<RouteRecordRaw> = [
     component: layout,
     redirect: '/spec/list',
     meta: {
-      icon: 'el-icon-present',
+      icon: Suitcase,
       title: '规格管理',
       showLink: true,
     },
@@ -174,7 +186,7 @@ export const routes: Array<RouteRecordRaw> = [
     component: layout,
     redirect: '/spu/list',
     meta: {
-      icon: 'el-icon-shopping-bag-1',
+      icon: Present,
       title: 'SPU管理',
       showLink: true,
     },
@@ -197,7 +209,7 @@ export const routes: Array<RouteRecordRaw> = [
     component: layout,
     redirect: '/sku/list',
     meta: {
-      icon: 'el-icon-shopping-bag-2',
+      icon: IceCream,
       title: 'SKU管理',
       showLink: true,
     },
@@ -220,7 +232,7 @@ export const routes: Array<RouteRecordRaw> = [
     component: layout,
     redirect: '/theme/list',
     meta: {
-      icon: 'el-icon-film',
+      icon: Pouring,
       title: '主题管理',
       showLink: true,
     },
@@ -243,7 +255,7 @@ export const routes: Array<RouteRecordRaw> = [
     component: () => import('../components/HelloWorld.vue'),
     redirect: '/activity/list',
     meta: {
-      icon: 'el-icon-reading',
+      icon: Sunny,
       title: '活动管理',
       showLink: true,
     },
