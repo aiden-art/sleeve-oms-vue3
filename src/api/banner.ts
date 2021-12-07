@@ -1,5 +1,5 @@
 import $axios from '@/request'
-import { APIResponseType, BaseListModel, BasePageParams } from '../baseModel'
+import { APIResponseType, BaseListModel, BasePageParams } from './apiTypes'
 
 export interface BannerModel {
   id: number
@@ -19,7 +19,7 @@ export interface BannerItemModel {
 }
 
 //获取banner列表
-export const getBannersApi = (data?: BasePageParams): APIResponseType<BaseListModel<BannerModel>> => {
+export const getBannerListApi = (data?: BasePageParams): APIResponseType<BaseListModel<BannerModel>> => {
   return $axios({
     method: 'get',
     url: '/v1/banner/list',

@@ -18,7 +18,7 @@
   </section>
 </template>
 
-<script>
+<script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { useRoute } from 'vue-router'
 export default defineComponent({
@@ -33,7 +33,6 @@ export default defineComponent({
 
 <style scoped>
 .app-main {
-  min-height: calc(100vh - 70px);
   width: 100%;
   position: relative;
   overflow-x: hidden;

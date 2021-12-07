@@ -82,7 +82,7 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: '/banner/list',
         name: 'BannerList',
-        component: () => import('@/views/banner/bannerList.vue'),
+        component: () => import('@/views/banner/list.vue'),
         meta: {
           icon: '',
           title: 'banner列表',
