@@ -8,11 +8,14 @@
   },
   "dependencies": {
     "@element-plus/icons": "^0.0.11",
+    "autoprefixer": "^10.4.0",
     "axios": "^0.21.1",
     "element-plus": "^1.2.0-beta.5",
     "lodash": "^4.17.21",
+    "postcss": "^8.4.4",
     "sass": "^1.32.5",
     "screenfull": "^5.1.0",
+    "tailwindcss": "^2.2.19",
     "vue": "^3.2.24",
     "vue-router": "^4.0.12",
     "vuex": "^4.0.2"

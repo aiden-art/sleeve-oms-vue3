@@ -89,16 +89,6 @@ export const routes: Array<RouteRecordRaw> = [
           showLink: true,
         },
       },
-      {
-        path: '/banner/add',
-        name: 'BannerAdd',
-        component: () => import('@/views/banner/bannerAdd.vue'),
-        meta: {
-          icon: '',
-          title: '创建banner',
-          showLink: true,
-        },
-      },
     ],
   },
   {

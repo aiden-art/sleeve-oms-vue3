@@ -2,37 +2,70 @@
   <div class="banner-list">
     <!-- 查询 -->
     <el-card shadow="hover">
-      <el-form size="mini" :inline="true" :model="queryForm" class="banner-list__query">
-        <el-form-item label="ID">
-          <el-input v-model="queryForm.id" placeholder="请输入ID"></el-input>
-        </el-form-item>
-        <el-form-item label="名称">
-          <el-input v-model="queryForm.name" placeholder="请输入名称"></el-input>
-        </el-form-item>
-        <el-form-item label="标题">
-          <el-input v-model="queryForm.title" placeholder="请输入标题"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onQuery">查询</el-button>
-        </el-form-item>
+      <el-form size="small" :inline="true" :model="queryForm" class="banner-list__query">
+        <el-row :gutter="48">
+          <el-col :md="8" :sm="24">
+            <el-form-item class="container" label="ID">
+              <el-input v-model="queryForm.id" placeholder="请输入ID"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :md="8" :sm="24">
+            <el-form-item class="container" label="名称">
+              <el-input v-model="queryForm.name" placeholder="请输入名称"></el-input>
+            </el-form-item>
+          </el-col>
+          <template v-if="isAdvanced">
+            <el-col :md="8" :sm="24">
+              <el-form-item class="container" label="标题">
+                <el-input v-model="queryForm.title" placeholder="请输入标题"></el-input>
+              </el-form-item>
+            </el-col>
+          </template>
+          <el-col :md="8" :sm="24">
+            <span class="flex content-center">
+              <el-button class="font-normal" size="small" type="primary" @click="onQuery">查询</el-button>
+              <el-button class="font-normal" size="small" @click="onQuery">重置</el-button>
+              <el-link type="primary" class="ml-2 font-normal" :underline="false" @click="handleAnvanced">
+                <span class="flex items-center">
+                  {{ isAdvanced ? '收起' : '展开' }}
+                  <template v-if="isAdvanced">
+                    <el-icon size="18px" class="ml-1"><arrow-up /></el-icon>
+                  </template>
+                  <template v-else>
+                    <el-icon size="18px" class="ml-1"><arrow-down /></el-icon>
+                  </template>
+                </span>
+              </el-link>
+            </span>
+          </el-col>
+        </el-row>
       </el-form>
     </el-card>
+    <!-- 新增弹窗 -->
+    <el-dialog v-model="dialogVisible" title="新增Banner">
+      <BannerForm />
+    </el-dialog>
+    <el-row class="mt-4">
+      <el-col :span="24">
+        <el-button size="small" type="primary" @click="handleCreate">新增</el-button>
+      </el-col>
+    </el-row>
     <!-- 列表 -->
     <el-card class="banner-list__table" shadow="hover">
-      <el-table size="small" :data="tableData" style="width: 100%">
+      <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="id" label="ID" />
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="description" label="描述" />
         <el-table-column prop="title" label="标题" />
         <el-table-column label="操作" width="120">
-          <template #default>
-            <el-button type="text" size="small">编辑</el-button>
+          <template #default="scope">
+            <el-button class="font-normal" type="text" size="small">编辑</el-button>
             <el-divider direction="vertical"></el-divider>
-            <el-button type="text" size="small">删除</el-button>
+            <el-button class="font-normal" type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination class="banner-list__pagination" small layout="prev, pager, next" :total="50"> </el-pagination>
+      <el-pagination class="banner-list__pagination" layout="total,prev, pager, next" :total="total"> </el-pagination>
     </el-card>
   </div>
 </template>
@@ -40,10 +73,13 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
 import { get as lodashGet } from 'lodash'
-import { ElMessage } from 'element-plus'
-import { getBannerListApi } from '@/api/banner'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { ArrowDown, ArrowUp } from '@element-plus/icons'
+import { getBannerListApi, deleteBannerApi, BannerModel } from '@/api/banner'
+import BannerForm from './components/BannerForm.vue'
 export default defineComponent({
   name: 'BannerList',
+  components: { ArrowDown, ArrowUp, BannerForm },
   setup() {
     const queryForm = reactive({
       id: '',
@@ -54,29 +90,78 @@ export default defineComponent({
     const onQuery = () => {
       return ''
     }
-
+    const dialogVisible = ref(false)
     const tableData = ref([])
+    const total = ref(0)
+
+    const isAdvanced = ref(false)
+
+    const handleAnvanced = () => {
+      isAdvanced.value = !isAdvanced.value
+    }
 
     const initBannerList = async () => {
       try {
         let res = await getBannerListApi()
         const code = lodashGet(res, 'data.code')
+        const message = lodashGet(res, 'data.message')
+        const totalNum = lodashGet(res, 'data.data.total')
         if (code === '00000') {
           const list = lodashGet(res, 'data.data.list')
           tableData.value = list
+          total.value = totalNum
+        } else {
+          ElMessage.error(`${message}`)
         }
       } catch (e) {
         console.log(e)
-        ElMessage.error('查询banner列表发生错误')
+        ElMessage.error('查询时发生错误')
       }
     }
 
     initBannerList()
 
+    const deleteBannerItem = async (id: number) => {
+      try {
+        let res = await deleteBannerApi(id)
+        const code = lodashGet(res, 'data.code')
+        const message = lodashGet(res, 'data.message')
+        if (code === '00000') {
+          ElMessage.success('删除成功')
+          initBannerList()
+        } else {
+          ElMessage.error(`${message}`)
+        }
+      } catch (e) {
+        console.log(e)
+        ElMessage.error('删除时发生错误')
+      }
+    }
+
+    const handleDelete = (row: BannerModel) => {
+      ElMessageBox.confirm('确定删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        deleteBannerItem(row.id)
+      })
+    }
+
+    const handleCreate = () => {
+      dialogVisible.value = true
+    }
+
     return {
       queryForm,
       onQuery,
       tableData,
+      total,
+      isAdvanced,
+      handleAnvanced,
+      handleDelete,
+      dialogVisible,
+      handleCreate,
     }
   },
 })
