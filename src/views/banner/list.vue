@@ -43,7 +43,13 @@
     </el-card>
     <!-- 新增弹窗 -->
     <el-dialog v-model="dialogVisible" title="新增Banner">
-      <BannerForm />
+      <BannerForm ref="bannerFormRef" :default-data="currentRow" />
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleSubmit">确定</el-button>
+        </span>
+      </template>
     </el-dialog>
     <el-row class="mt-4">
       <el-col :span="24">
@@ -54,12 +60,22 @@
     <el-card class="banner-list__table" shadow="hover">
       <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="id" label="ID" />
+        <el-table-column prop="img" label="图片">
+          <template #default="scope">
+            <el-image
+              v-if="scope.row.img"
+              class="block max-w-1/5"
+              :src="scope.row.img"
+              :preview-src-list="[scope.row.img]"
+            ></el-image>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="名称" />
-        <el-table-column prop="description" label="描述" />
         <el-table-column prop="title" label="标题" />
+        <el-table-column prop="description" label="描述" />
         <el-table-column label="操作" width="120">
           <template #default="scope">
-            <el-button class="font-normal" type="text" size="small">编辑</el-button>
+            <el-button class="font-normal" type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
             <el-divider direction="vertical"></el-divider>
             <el-button class="font-normal" type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
           </template>
@@ -75,8 +91,11 @@ import { defineComponent, reactive, ref } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown, ArrowUp } from '@element-plus/icons'
-import { getBannerListApi, deleteBannerApi, BannerModel } from '@/api/banner'
+import { getBannerListApi, deleteBannerApi, BannerModel, editBannerApi, createBannerApi } from '@/api/banner'
 import BannerForm from './components/BannerForm.vue'
+
+type BannerFormCtx = InstanceType<typeof BannerForm>
+
 export default defineComponent({
   name: 'BannerList',
   components: { ArrowDown, ArrowUp, BannerForm },
@@ -95,6 +114,12 @@ export default defineComponent({
     const total = ref(0)
 
     const isAdvanced = ref(false)
+
+    const bannerFormRef = ref<null | BannerFormCtx>(null)
+
+    const isEdit = ref(false)
+
+    const currentRow = ref<BannerModel | undefined>(undefined)
 
     const handleAnvanced = () => {
       isAdvanced.value = !isAdvanced.value
@@ -144,12 +169,52 @@ export default defineComponent({
         cancelButtonText: '取消',
         type: 'warning',
       }).then(() => {
-        deleteBannerItem(row.id)
+        if (row.id) {
+          deleteBannerItem(row.id)
+        }
       })
     }
 
-    const handleCreate = () => {
+    const handleEdit = (row: BannerModel) => {
+      isEdit.value = true
       dialogVisible.value = true
+      currentRow.value = row
+    }
+
+    const handleCreate = () => {
+      isEdit.value = false
+      dialogVisible.value = true
+      currentRow.value = undefined
+    }
+
+    const handleSubmit = async () => {
+      try {
+        let bannerForm = await bannerFormRef.value?.handleSubmit()
+        let res = null
+        if (bannerForm) {
+          if (isEdit.value) {
+            // 编辑
+            res = await editBannerApi({
+              ...bannerForm,
+              id: currentRow.value?.id,
+            })
+          } else {
+            //新增
+            res = await createBannerApi(bannerForm)
+          }
+          const code = lodashGet(res, 'data.code')
+          const message = lodashGet(res, 'data.message')
+          if (code === '00000') {
+            dialogVisible.value = false
+            ElMessage.success(`${message}`)
+            initBannerList()
+          } else {
+            ElMessage.error(`${message}`)
+          }
+        }
+      } catch (e) {
+        ElMessage.error(`${isEdit.value ? '更新' : '创建'}时发生错误`)
+      }
     }
 
     return {
@@ -162,6 +227,10 @@ export default defineComponent({
       handleDelete,
       dialogVisible,
       handleCreate,
+      handleSubmit,
+      bannerFormRef,
+      handleEdit,
+      currentRow,
     }
   },
 })

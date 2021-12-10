@@ -22,6 +22,6 @@ export function createProxy(list: ProxyList): ProxyTarget {
       //htttps下secure为false
       ...(isHttps ? { secure: false } : {}),
     }
-    return proxyTarget
   }
+  return proxyTarget
 }

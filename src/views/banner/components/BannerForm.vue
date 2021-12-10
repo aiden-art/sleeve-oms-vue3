@@ -1,33 +1,34 @@
 <template>
   <div class="banner-form">
-    <el-form size="small" :model="bannerForm" label-width="80px">
-      <el-form-item label="名称">
+    <el-form ref="ELFormRef" size="small" :model="bannerForm" label-width="80px" :rules="bannerFormRules">
+      <el-form-item label="名称" prop="name">
         <el-input v-model="bannerForm.name" placeholder="请输入名称"></el-input>
       </el-form-item>
-      <el-form-item label="标题">
+      <el-form-item label="标题" prop="title">
         <el-input v-model="bannerForm.title" placeholder="请输入标题"></el-input>
       </el-form-item>
-      <el-form-item label="图片">
-        <el-upload
-          class="banner-form__upload"
-          action=""
-          :http-request="uploadImageToOSS"
-          :show-file-list="false"
-          :on-change="handleFileChange"
-          :before-upload="beforeUpload"
-        >
+      <el-form-item label="图片" prop="img">
+        <div class="banner-form__upload flex">
           <el-image
             v-if="bannerForm.img"
-            style="width: 100px; height: 100px"
+            style="width: 148px; height: 148px"
             :src="bannerForm.img"
-            :initial-index="1"
+            :preview-src-list="previewList"
           ></el-image>
-          <el-icon v-else class="banner-form__icon flex justify-center items-center">
-            <Plus />
-          </el-icon>
-        </el-upload>
+          <el-upload
+            class="banner-form__upload ml-2"
+            action=""
+            list-type="picture-card"
+            :http-request="uploadImageToOSS"
+            :show-file-list="false"
+            :on-change="handleFileChange"
+            :before-upload="beforeUpload"
+          >
+            <el-icon><Plus /></el-icon>
+          </el-upload>
+        </div>
       </el-form-item>
-      <el-form-item label="描述" placeholder="请输入描述">
+      <el-form-item label="描述" placeholder="请输入描述" prop="description">
         <el-input v-model="bannerForm.description"></el-input>
       </el-form-item>
     </el-form>
@@ -35,25 +36,58 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, reactive, ref, computed, PropType, watch } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { Plus } from '@element-plus/icons'
 import { FileHandler, ElFile } from 'element-plus/lib/components/upload/src/upload.type'
 import { uploadFileToOSS } from '@/api/upload'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElForm } from 'element-plus'
+import { BannerModel } from '@/api/banner'
+
+type ELFormCtx = InstanceType<typeof ElForm>
+
 export default defineComponent({
   // banner操作表单，用于编辑和新增
   name: 'BannerForm',
   components: { Plus },
-  setup() {
-    const bannerForm = reactive({
+  props: {
+    defaultData: {
+      type: Object as PropType<BannerModel>,
+      default: null,
+    },
+  },
+  setup(props) {
+    let bannerForm = ref<BannerModel>({
       name: '',
       title: '',
       description: '',
       img: '',
     })
 
+    const bannerFormRules = {
+      name: [
+        {
+          required: true,
+          message: '名称不能为空',
+          trigger: 'blur',
+        },
+      ],
+      img: [
+        {
+          required: true,
+          message: '图片不能为空',
+          trigger: 'blur',
+        },
+      ],
+    }
+
+    const ELFormRef = ref<null | ELFormCtx>(null)
+
     const fileList = ref<ElFile[]>([])
+
+    const previewList = computed(() => {
+      return [bannerForm.value.img]
+    })
 
     const beforeUpload = () => {
       return true
@@ -71,7 +105,7 @@ export default defineComponent({
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
         if (code === '00000') {
-          console.log(res)
+          bannerForm.value.img = res.data.data.url
           ElMessage.success(`${message}`)
         } else {
           ElMessage.error(`${message}`)
@@ -82,36 +116,47 @@ export default defineComponent({
       }
     }
 
+    const handleSubmit = (): Promise<BannerModel> => {
+      return new Promise((resolve, reject) => {
+        ELFormRef.value?.validate((valid) => {
+          if (valid) {
+            resolve(bannerForm.value)
+          }
+        })
+      })
+    }
+
+    watch(
+      () => props.defaultData,
+      (val) => {
+        if (val) {
+          bannerForm.value = val
+        } else {
+          bannerForm.value = {
+            name: '',
+            title: '',
+            description: '',
+            img: '',
+          }
+        }
+      },
+      {
+        immediate: true,
+      }
+    )
+
     return {
       bannerForm,
+      bannerFormRules,
+      previewList,
       beforeUpload,
       uploadImageToOSS,
       handleFileChange,
+      ELFormRef,
+      handleSubmit,
     }
   },
 })
 </script>
 
-<style lang="scss">
-.banner-form {
-  &__upload {
-    .el-upload {
-      border: 1px dashed #d9d9d9;
-      border-radius: 6px;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-    .el-upload:hover {
-      border-color: #409eff;
-    }
-  }
-  &__icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 100px;
-    height: 100px;
-    text-align: center;
-  }
-}
-</style>
+<style lang="scss"></style>

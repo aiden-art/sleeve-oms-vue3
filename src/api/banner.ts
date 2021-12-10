@@ -2,7 +2,7 @@ import $axios from '@/request'
 import { APIResponseType, BaseListModel, BasePageParams } from './apiTypes'
 
 export interface BannerModel {
-  id: number
+  id?: number
   name: string
   title: string
   description: string
@@ -49,5 +49,14 @@ export const deleteBannerApi = (id: number): APIResponseType<null> => {
   return $axios({
     method: 'delete',
     url: `/v1/banner/${id}`,
+  })
+}
+
+//创建banner
+export const createBannerApi = (data: BannerModel): APIResponseType<null> => {
+  return $axios({
+    method: 'post',
+    url: `/v1/banner/create`,
+    data,
   })
 }
