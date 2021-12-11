@@ -11,7 +11,7 @@
         <div class="banner-form__upload flex">
           <el-image
             v-if="bannerForm.img"
-            style="width: 148px; height: 148px"
+            style="width: 100px; height: 100px"
             :src="bannerForm.img"
             :preview-src-list="previewList"
           ></el-image>
@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, computed, PropType, watch } from 'vue'
+import { defineComponent, ref, computed, PropType, watch } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { Plus } from '@element-plus/icons'
 import { FileHandler, ElFile } from 'element-plus/lib/components/upload/src/upload.type'
@@ -117,7 +117,7 @@ export default defineComponent({
     }
 
     const handleSubmit = (): Promise<BannerModel> => {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         ELFormRef.value?.validate((valid) => {
           if (valid) {
             resolve(bannerForm.value)
@@ -159,4 +159,16 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.banner-form {
+  .el-upload--picture-card {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    @include flex(row, center, center);
+    .el-icon {
+      margin: 0;
+    }
+  }
+}
+</style>

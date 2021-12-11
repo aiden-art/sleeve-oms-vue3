@@ -24,7 +24,7 @@
           <el-col :md="8" :sm="24">
             <span class="flex content-center">
               <el-button class="font-normal" size="small" type="primary" @click="onQuery">查询</el-button>
-              <el-button class="font-normal" size="small" @click="onQuery">重置</el-button>
+              <el-button class="font-normal" size="small" @click="onReset">重置</el-button>
               <el-link type="primary" class="ml-2 font-normal" :underline="false" @click="handleAnvanced">
                 <span class="flex items-center">
                   {{ isAdvanced ? '收起' : '展开' }}
@@ -42,7 +42,7 @@
       </el-form>
     </el-card>
     <!-- 新增弹窗 -->
-    <el-dialog v-model="dialogVisible" title="新增Banner">
+    <el-dialog v-model="dialogVisible" :title="dialogTitle">
       <BannerForm ref="bannerFormRef" :default-data="currentRow" />
       <template #footer>
         <span class="dialog-footer">
@@ -81,17 +81,33 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination class="banner-list__pagination" layout="total,prev, pager, next" :total="total"> </el-pagination>
+      <el-pagination
+        v-model:pageSize="pageSize"
+        v-model:currentPage="currentPage"
+        small
+        class="banner-list__pagination"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="sizes,prev, pager, next"
+        :total="total"
+      >
+      </el-pagination>
     </el-card>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown, ArrowUp } from '@element-plus/icons'
-import { getBannerListApi, deleteBannerApi, BannerModel, editBannerApi, createBannerApi } from '@/api/banner'
+import {
+  getBannerListApi,
+  deleteBannerApi,
+  BannerModel,
+  BannerQueryType,
+  editBannerApi,
+  createBannerApi,
+} from '@/api/banner'
 import BannerForm from './components/BannerForm.vue'
 
 type BannerFormCtx = InstanceType<typeof BannerForm>
@@ -100,14 +116,23 @@ export default defineComponent({
   name: 'BannerList',
   components: { ArrowDown, ArrowUp, BannerForm },
   setup() {
-    const queryForm = reactive({
-      id: '',
+    const queryForm = ref<BannerQueryType>({
+      id: undefined,
       name: '',
       title: '',
     })
 
     const onQuery = () => {
-      return ''
+      initBannerList()
+    }
+
+    const onReset = () => {
+      queryForm.value = {
+        id: undefined,
+        name: '',
+        title: '',
+      }
+      initBannerList()
     }
     const dialogVisible = ref(false)
     const tableData = ref([])
@@ -121,13 +146,21 @@ export default defineComponent({
 
     const currentRow = ref<BannerModel | undefined>(undefined)
 
+    const currentPage = ref(1)
+
+    const pageSize = ref(10)
+
     const handleAnvanced = () => {
       isAdvanced.value = !isAdvanced.value
     }
 
     const initBannerList = async () => {
       try {
-        let res = await getBannerListApi()
+        let res = await getBannerListApi({
+          pageNum: currentPage.value,
+          pageSize: pageSize.value,
+          ...queryForm.value,
+        })
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
         const totalNum = lodashGet(res, 'data.data.total')
@@ -217,11 +250,32 @@ export default defineComponent({
       }
     }
 
+    const dialogTitle = computed(() => {
+      return isEdit.value ? '编辑Banner' : '新增Banner'
+    })
+
+    watch(
+      () => currentPage.value,
+      () => {
+        initBannerList()
+      }
+    )
+
+    watch(
+      () => pageSize.value,
+      () => {
+        initBannerList()
+      }
+    )
+
     return {
       queryForm,
       onQuery,
+      onReset,
       tableData,
       total,
+      currentPage,
+      pageSize,
       isAdvanced,
       handleAnvanced,
       handleDelete,
@@ -231,6 +285,7 @@ export default defineComponent({
       bannerFormRef,
       handleEdit,
       currentRow,
+      dialogTitle,
     }
   },
 })

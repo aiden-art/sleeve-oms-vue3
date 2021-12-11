@@ -18,8 +18,16 @@ export interface BannerItemModel {
   bannerId: number
 }
 
+export type BannerQueryType = {
+  id?: number
+  name?: string
+  title?: string
+}
+
 //获取banner列表
-export const getBannerListApi = (data?: BasePageParams): APIResponseType<BaseListModel<BannerModel>> => {
+export const getBannerListApi = (
+  data?: BasePageParams & BannerQueryType
+): APIResponseType<BaseListModel<BannerModel>> => {
   return $axios({
     method: 'get',
     url: '/v1/banner/list',
