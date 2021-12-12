@@ -113,6 +113,7 @@ import {
   editBannerApi,
   createBannerApi,
 } from '@/api/banner'
+import { SUCCESS_CODE } from '@/config/constant'
 import BannerForm from './components/BannerForm.vue'
 
 type BannerFormCtx = InstanceType<typeof BannerForm>
@@ -170,7 +171,7 @@ export default defineComponent({
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
         const totalNum = lodashGet(res, 'data.data.total')
-        if (code === '00000') {
+        if (code === SUCCESS_CODE) {
           const list = lodashGet(res, 'data.data.list')
           tableData.value = list
           total.value = totalNum
@@ -190,7 +191,7 @@ export default defineComponent({
         let res = await deleteBannerApi(id)
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
-        if (code === '00000') {
+        if (code === SUCCESS_CODE) {
           ElMessage.success('删除成功')
           initBannerList()
         } else {
@@ -254,7 +255,7 @@ export default defineComponent({
           }
           const code = lodashGet(res, 'data.code')
           const message = lodashGet(res, 'data.message')
-          if (code === '00000') {
+          if (code === SUCCESS_CODE) {
             dialogVisible.value = false
             ElMessage.success(`${message}`)
             initBannerList()

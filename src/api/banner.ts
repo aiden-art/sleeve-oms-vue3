@@ -1,5 +1,4 @@
 import $axios from '@/request'
-import { method } from 'lodash'
 import { APIResponseType, BaseListModel, BasePageParams } from './apiTypes'
 
 export interface BannerModel {

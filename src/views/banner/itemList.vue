@@ -49,6 +49,7 @@ import { computed, defineComponent, ref } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { SUCCESS_CODE } from '@/config/constant'
 import {
   getBannerDetailApi,
   createBannerItemApi,
@@ -81,7 +82,7 @@ export default defineComponent({
         let res = await getBannerDetailApi(bannerID)
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
-        if (code === '00000') {
+        if (code === SUCCESS_CODE) {
           const list = lodashGet(res, 'data.data.bannerItems')
           tableData.value = list
         } else {
@@ -100,7 +101,7 @@ export default defineComponent({
         let res = await deleteBannerItemApi(id)
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
-        if (code === '00000') {
+        if (code === SUCCESS_CODE) {
           ElMessage.success('删除成功')
           initBannerItemList()
         } else {
@@ -161,7 +162,7 @@ export default defineComponent({
           }
           const code = lodashGet(res, 'data.code')
           const message = lodashGet(res, 'data.message')
-          if (code === '00000') {
+          if (code === SUCCESS_CODE) {
             dialogVisible.value = false
             ElMessage.success(`${message}`)
             initBannerItemList()

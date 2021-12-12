@@ -42,6 +42,7 @@ import { Plus } from '@element-plus/icons'
 import { FileHandler, ElFile } from 'element-plus/lib/components/upload/src/upload.type'
 import { uploadFileToOSS } from '@/api/upload'
 import { ElMessage, ElForm } from 'element-plus'
+import { SUCCESS_CODE } from '@/config/constant'
 import { BannerModel } from '@/api/banner'
 
 type ELFormCtx = InstanceType<typeof ElForm>
@@ -105,7 +106,7 @@ export default defineComponent({
         const res = await uploadFileToOSS(form)
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
-        if (code === '00000') {
+        if (code === SUCCESS_CODE) {
           bannerForm.value.img = res.data.data.url
           ElMessage.success(`${message}`)
         } else {

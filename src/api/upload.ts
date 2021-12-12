@@ -7,7 +7,7 @@ export interface UploadResModel {
 }
 
 //上传文件至OSS
-export const uploadFileToOSS = (data: any): APIResponseType<UploadResModel> => {
+export const uploadFileToOSS = (data: FormData): APIResponseType<UploadResModel> => {
   return $axios({
     method: 'post',
     url: '/upload/oss',
