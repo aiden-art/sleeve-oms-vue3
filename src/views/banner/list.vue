@@ -46,7 +46,7 @@
       <BannerForm ref="bannerFormRef" :default-data="currentRow" />
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button @click="handleCancel">取消</el-button>
           <el-button type="primary" @click="handleSubmit">确定</el-button>
         </span>
       </template>
@@ -73,9 +73,13 @@
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="title" label="标题" />
         <el-table-column prop="description" label="描述" />
-        <el-table-column label="操作" width="120">
+        <el-table-column label="操作" width="180">
           <template #default="scope">
             <el-button class="font-normal" type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-button class="font-normal" type="text" size="small" @click="handleBannerItem(scope.row)">
+              新增Item
+            </el-button>
             <el-divider direction="vertical"></el-divider>
             <el-button class="font-normal" type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
           </template>
@@ -98,6 +102,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from 'vue'
 import { get as lodashGet } from 'lodash'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown, ArrowUp } from '@element-plus/icons'
 import {
@@ -116,6 +121,7 @@ export default defineComponent({
   name: 'BannerList',
   components: { ArrowDown, ArrowUp, BannerForm },
   setup() {
+    const router = useRouter()
     const queryForm = ref<BannerQueryType>({
       id: undefined,
       name: '',
@@ -208,6 +214,17 @@ export default defineComponent({
       })
     }
 
+    const handleCancel = () => {
+      dialogVisible.value = false
+      bannerFormRef.value?.resetForm()
+    }
+
+    const handleBannerItem = (row: BannerModel) => {
+      router.push({
+        path: `/banner/item-list/${row.id}`,
+      })
+    }
+
     const handleEdit = (row: BannerModel) => {
       isEdit.value = true
       dialogVisible.value = true
@@ -241,6 +258,7 @@ export default defineComponent({
             dialogVisible.value = false
             ElMessage.success(`${message}`)
             initBannerList()
+            bannerFormRef.value?.resetForm()
           } else {
             ElMessage.error(`${message}`)
           }
@@ -279,6 +297,8 @@ export default defineComponent({
       isAdvanced,
       handleAnvanced,
       handleDelete,
+      handleCancel,
+      handleBannerItem,
       dialogVisible,
       handleCreate,
       handleSubmit,

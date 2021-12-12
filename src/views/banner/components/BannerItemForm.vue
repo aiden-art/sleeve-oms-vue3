@@ -1,18 +1,23 @@
 <template>
-  <div class="banner-form">
-    <el-form ref="ELFormRef" size="small" :model="bannerForm" label-width="80px" :rules="bannerFormRules">
+  <div class="banner-item-form">
+    <el-form ref="ELFormRef" size="small" :model="bannerItemForm" label-width="80px" :rules="bannerItemFormRules">
       <el-form-item label="名称" prop="name">
-        <el-input v-model="bannerForm.name" placeholder="请输入名称"></el-input>
+        <el-input v-model="bannerItemForm.name" placeholder="请输入名称"></el-input>
       </el-form-item>
-      <el-form-item label="标题" prop="title">
-        <el-input v-model="bannerForm.title" placeholder="请输入标题"></el-input>
+      <el-form-item label="关键字" prop="keyword">
+        <el-input v-model="bannerItemForm.keyword" placeholder="请输入标题"></el-input>
+      </el-form-item>
+      <el-form-item label="类型" prop="type">
+        <el-select v-model="bannerItemForm.type" placeholder="请选择类型">
+          <el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="图片" prop="img">
         <div class="banner-form__upload flex">
           <el-image
-            v-if="bannerForm.img"
+            v-if="bannerItemForm.img"
             style="width: 100px; height: 100px"
-            :src="bannerForm.img"
+            :src="bannerItemForm.img"
             :preview-src-list="previewList"
           ></el-image>
           <el-upload
@@ -28,9 +33,6 @@
           </el-upload>
         </div>
       </el-form-item>
-      <el-form-item label="描述" placeholder="请输入描述" prop="description">
-        <el-input v-model="bannerForm.description"></el-input>
-      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -42,29 +44,44 @@ import { Plus } from '@element-plus/icons'
 import { FileHandler, ElFile } from 'element-plus/lib/components/upload/src/upload.type'
 import { uploadFileToOSS } from '@/api/upload'
 import { ElMessage, ElForm } from 'element-plus'
-import { BannerModel } from '@/api/banner'
+import { BannerItemModel } from '@/api/banner'
 
 type ELFormCtx = InstanceType<typeof ElForm>
 
 export default defineComponent({
   // banner操作表单，用于编辑和新增
-  name: 'BannerForm',
+  name: 'BannerItemForm',
   components: { Plus },
   props: {
     defaultData: {
-      type: Object as PropType<BannerModel>,
+      type: Object as PropType<BannerItemModel>,
       default: null,
     },
   },
   setup(props) {
-    let bannerForm = ref<BannerModel>({
+    const typeOptions = ref([
+      {
+        value: 1,
+        label: 'Option1',
+      },
+      {
+        value: 2,
+        label: 'Option2',
+      },
+      {
+        value: 3,
+        label: 'Option3',
+      },
+    ])
+
+    let bannerItemForm = ref<BannerItemModel>({
       name: '',
-      title: '',
-      description: '',
+      keyword: '',
+      type: undefined,
       img: '',
     })
 
-    const bannerFormRules = {
+    const bannerItemFormRules = {
       name: [
         {
           required: true,
@@ -86,7 +103,7 @@ export default defineComponent({
     const fileList = ref<ElFile[]>([])
 
     const previewList = computed(() => {
-      return [bannerForm.value.img]
+      return [bannerItemForm.value.img]
     })
 
     const beforeUpload = () => {
@@ -106,7 +123,7 @@ export default defineComponent({
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
         if (code === '00000') {
-          bannerForm.value.img = res.data.data.url
+          bannerItemForm.value.img = res.data.data.url
           ElMessage.success(`${message}`)
         } else {
           ElMessage.error(`${message}`)
@@ -117,20 +134,20 @@ export default defineComponent({
       }
     }
 
-    const handleSubmit = (): Promise<BannerModel> => {
+    const handleSubmit = (): Promise<BannerItemModel> => {
       return new Promise((resolve) => {
         ELFormRef.value?.validate((valid) => {
           if (valid) {
-            resolve(bannerForm.value)
+            resolve(bannerItemForm.value)
           }
         })
       })
     }
     const resetForm = () => {
-      bannerForm.value = {
+      bannerItemForm.value = {
         name: '',
-        title: '',
-        description: '',
+        type: undefined,
+        keyword: '',
         img: '',
       }
     }
@@ -139,7 +156,7 @@ export default defineComponent({
       () => props.defaultData,
       (val) => {
         if (val) {
-          bannerForm.value = val
+          bannerItemForm.value = val
         } else {
           resetForm()
         }
@@ -150,8 +167,8 @@ export default defineComponent({
     )
 
     return {
-      bannerForm,
-      bannerFormRules,
+      bannerItemForm,
+      bannerItemFormRules,
       previewList,
       beforeUpload,
       uploadImageToOSS,
@@ -159,13 +176,14 @@ export default defineComponent({
       ELFormRef,
       handleSubmit,
       resetForm,
+      typeOptions,
     }
   },
 })
 </script>
 
 <style lang="scss">
-.banner-form {
+.banner-item-form {
   .el-upload--picture-card {
     width: 100px;
     height: 100px;

@@ -89,6 +89,17 @@ export const routes: Array<RouteRecordRaw> = [
           showLink: true,
         },
       },
+      {
+        path: '/banner/item-list/:bannerID',
+        name: 'BannerItemList',
+        component: () => import('@/views/banner/itemList.vue'),
+        meta: {
+          hidden: true,
+          icon: '',
+          title: 'bannerItem列表',
+          showLink: false,
+        },
+      },
     ],
   },
   {

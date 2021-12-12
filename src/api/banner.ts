@@ -1,4 +1,5 @@
 import $axios from '@/request'
+import { method } from 'lodash'
 import { APIResponseType, BaseListModel, BasePageParams } from './apiTypes'
 
 export interface BannerModel {
@@ -10,12 +11,12 @@ export interface BannerModel {
   items?: BannerItemModel[]
 }
 export interface BannerItemModel {
-  id: number
+  id?: number
   name: string
   img: string
   keyword: string
-  type: number
-  bannerId: number
+  type?: number
+  bannerId?: number
 }
 
 export type BannerQueryType = {
@@ -66,5 +67,39 @@ export const createBannerApi = (data: BannerModel): APIResponseType<null> => {
     method: 'post',
     url: `/v1/banner/create`,
     data,
+  })
+}
+
+//创建bannerItem
+export const createBannerItemApi = (data: BannerItemModel): APIResponseType<null> => {
+  return $axios({
+    method: 'post',
+    url: '/v1/banner-item/create',
+    data,
+  })
+}
+
+//编辑BannerItem
+export const editBannerItemApi = (data: BannerItemModel): APIResponseType<null> => {
+  return $axios({
+    method: 'post',
+    url: '/v1/banner-item/update',
+    data,
+  })
+}
+
+//删除BannerItem
+export const deleteBannerItemApi = (id: number): APIResponseType<null> => {
+  return $axios({
+    method: 'delete',
+    url: `/v1/banner-item/${id}`,
+  })
+}
+
+//获取bannerItem详情
+export const getBannerItemDetail = (id: number): APIResponseType<BannerItemModel> => {
+  return $axios({
+    method: 'get',
+    url: `/v1/banner-item/${id}`,
   })
 }
