@@ -116,7 +116,7 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: '/category/list',
         name: 'CategoryList',
-        component: () => import('../components/HelloWorld.vue'),
+        component: () => import('../views/category/index.vue'),
         meta: {
           icon: '',
           title: '分类列表',
