@@ -53,7 +53,7 @@ export default defineComponent({
   components: { Plus },
   props: {
     defaultData: {
-      type: Object as PropType<BannerModel>,
+      type: Object as PropType<BannerModel | null>,
       default: null,
     },
   },

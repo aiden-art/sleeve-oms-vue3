@@ -100,7 +100,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent, watch, reactive, toRefs } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -123,58 +123,54 @@ export default defineComponent({
   components: { ArrowDown, ArrowUp, BannerForm },
   setup() {
     const router = useRouter()
-    const queryForm = ref<BannerQueryType>({
-      id: undefined,
-      name: '',
-      title: '',
+    const state = reactive({
+      queryForm: {
+        id: undefined,
+        name: '',
+        title: '',
+      } as BannerQueryType,
+      dialogVisible: false,
+      tableData: [],
+      total: 0,
+      isAdvanced: false,
+      bannerFormRef: null as null | BannerFormCtx,
+      isEdit: false,
+      currentRow: null as null | BannerModel,
+      currentPage: 1,
+      pageSize: 10,
     })
+
+    const handleAnvanced = () => {
+      state.isAdvanced = !state.isAdvanced
+    }
 
     const onQuery = () => {
       initBannerList()
     }
 
     const onReset = () => {
-      queryForm.value = {
+      state.queryForm = {
         id: undefined,
         name: '',
         title: '',
       }
       initBannerList()
     }
-    const dialogVisible = ref(false)
-    const tableData = ref([])
-    const total = ref(0)
-
-    const isAdvanced = ref(false)
-
-    const bannerFormRef = ref<null | BannerFormCtx>(null)
-
-    const isEdit = ref(false)
-
-    const currentRow = ref<BannerModel | undefined>(undefined)
-
-    const currentPage = ref(1)
-
-    const pageSize = ref(10)
-
-    const handleAnvanced = () => {
-      isAdvanced.value = !isAdvanced.value
-    }
 
     const initBannerList = async () => {
       try {
         let res = await getBannerListApi({
-          pageNum: currentPage.value,
-          pageSize: pageSize.value,
-          ...queryForm.value,
+          pageNum: state.currentPage,
+          pageSize: state.pageSize,
+          ...state.queryForm,
         })
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
         const totalNum = lodashGet(res, 'data.data.total')
         if (code === SUCCESS_CODE) {
           const list = lodashGet(res, 'data.data.list')
-          tableData.value = list
-          total.value = totalNum
+          state.tableData = list
+          state.total = totalNum
         } else {
           ElMessage.error(`${message}`)
         }
@@ -183,8 +179,6 @@ export default defineComponent({
         ElMessage.error('查询时发生错误')
       }
     }
-
-    initBannerList()
 
     const deleteBannerItem = async (id: number) => {
       try {
@@ -216,8 +210,8 @@ export default defineComponent({
     }
 
     const handleCancel = () => {
-      dialogVisible.value = false
-      bannerFormRef.value?.resetForm()
+      state.dialogVisible = false
+      state.bannerFormRef?.resetForm()
     }
 
     const handleBannerItem = (row: BannerModel) => {
@@ -227,27 +221,27 @@ export default defineComponent({
     }
 
     const handleEdit = (row: BannerModel) => {
-      isEdit.value = true
-      dialogVisible.value = true
-      currentRow.value = row
+      state.isEdit = true
+      state.dialogVisible = true
+      state.currentRow = row
     }
 
     const handleCreate = () => {
-      isEdit.value = false
-      dialogVisible.value = true
-      currentRow.value = undefined
+      state.isEdit = false
+      state.dialogVisible = true
+      state.currentRow = null
     }
 
     const handleSubmit = async () => {
       try {
-        let bannerForm = await bannerFormRef.value?.handleSubmit()
+        let bannerForm = await state.bannerFormRef?.handleSubmit()
         let res = null
         if (bannerForm) {
-          if (isEdit.value) {
+          if (state.isEdit) {
             // 编辑
             res = await editBannerApi({
               ...bannerForm,
-              id: currentRow.value?.id,
+              id: state.currentRow?.id,
             })
           } else {
             //新增
@@ -256,56 +250,50 @@ export default defineComponent({
           const code = lodashGet(res, 'data.code')
           const message = lodashGet(res, 'data.message')
           if (code === SUCCESS_CODE) {
-            dialogVisible.value = false
+            state.dialogVisible = false
             ElMessage.success(`${message}`)
             initBannerList()
-            bannerFormRef.value?.resetForm()
+            state.bannerFormRef?.resetForm()
           } else {
             ElMessage.error(`${message}`)
           }
         }
       } catch (e) {
-        ElMessage.error(`${isEdit.value ? '更新' : '创建'}时发生错误`)
+        ElMessage.error(`${state.isEdit ? '更新' : '创建'}时发生错误`)
       }
     }
 
     const dialogTitle = computed(() => {
-      return isEdit.value ? '编辑Banner' : '新增Banner'
+      return state.isEdit ? '编辑Banner' : '新增Banner'
     })
 
     watch(
-      () => currentPage.value,
+      () => state.currentPage,
       () => {
         initBannerList()
       }
     )
 
     watch(
-      () => pageSize.value,
+      () => state.pageSize,
       () => {
         initBannerList()
       }
     )
 
+    initBannerList()
+
     return {
-      queryForm,
+      ...toRefs(state),
       onQuery,
       onReset,
-      tableData,
-      total,
-      currentPage,
-      pageSize,
-      isAdvanced,
       handleAnvanced,
+      handleEdit,
       handleDelete,
       handleCancel,
       handleBannerItem,
-      dialogVisible,
       handleCreate,
       handleSubmit,
-      bannerFormRef,
-      handleEdit,
-      currentRow,
       dialogTitle,
     }
   },
