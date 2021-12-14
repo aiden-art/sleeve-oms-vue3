@@ -93,8 +93,6 @@ export default defineComponent({
       }
     }
 
-    initBannerItemList()
-
     const deleteBannerItem = async (id: number) => {
       try {
         let res = await deleteBannerItemApi(id)
@@ -178,6 +176,8 @@ export default defineComponent({
     const dialogTitle = computed(() => {
       return state.isEdit ? '编辑BannerItem' : '新增BannerItem'
     })
+
+    initBannerItemList()
 
     return {
       ...toRefs(state),

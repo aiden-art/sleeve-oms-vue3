@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, PropType, watch } from 'vue'
+import { defineComponent, computed, PropType, watch, reactive, toRefs } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { Plus } from '@element-plus/icons'
 import { FileHandler, ElFile } from 'element-plus/lib/components/upload/src/upload.type'
@@ -60,26 +60,29 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const typeOptions = ref([
-      {
-        value: 1,
-        label: 'Option1',
-      },
-      {
-        value: 2,
-        label: 'Option2',
-      },
-      {
-        value: 3,
-        label: 'Option3',
-      },
-    ])
-
-    let bannerItemForm = ref<BannerItemModel>({
-      name: '',
-      keyword: '',
-      type: undefined,
-      img: '',
+    const state = reactive({
+      typeOptions: [
+        {
+          value: 1,
+          label: 'Option1',
+        },
+        {
+          value: 2,
+          label: 'Option2',
+        },
+        {
+          value: 3,
+          label: 'Option3',
+        },
+      ],
+      bannerItemForm: {
+        name: '',
+        keyword: '',
+        type: undefined,
+        img: '',
+      } as BannerItemModel,
+      ELFormRef: null as null | ELFormCtx,
+      fileList: [] as ElFile[],
     })
 
     const bannerItemFormRules = {
@@ -99,32 +102,29 @@ export default defineComponent({
       ],
     }
 
-    const ELFormRef = ref<null | ELFormCtx>(null)
-
-    const fileList = ref<ElFile[]>([])
-
     const previewList = computed(() => {
-      return [bannerItemForm.value.img]
+      return [state.bannerItemForm.img]
     })
 
     const beforeUpload = () => {
       return true
     }
+
     const handleFileChange: FileHandler = (file) => {
-      fileList.value = []
-      fileList.value.push(file.raw)
+      state.fileList = []
+      state.fileList.push(file.raw)
     }
 
     const uploadImageToOSS = async () => {
       try {
         const form = new FormData()
-        const file = fileList.value[0]
+        const file = state.fileList[0]
         form.append('file', file)
         const res = await uploadFileToOSS(form)
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
         if (code === SUCCESS_CODE) {
-          bannerItemForm.value.img = res.data.data.url
+          state.bannerItemForm.img = res.data.data.url
           ElMessage.success(`${message}`)
         } else {
           ElMessage.error(`${message}`)
@@ -137,15 +137,16 @@ export default defineComponent({
 
     const handleSubmit = (): Promise<BannerItemModel> => {
       return new Promise((resolve) => {
-        ELFormRef.value?.validate((valid) => {
+        state.ELFormRef?.validate((valid) => {
           if (valid) {
-            resolve(bannerItemForm.value)
+            resolve(state.bannerItemForm)
           }
         })
       })
     }
+
     const resetForm = () => {
-      bannerItemForm.value = {
+      state.bannerItemForm = {
         name: '',
         type: undefined,
         keyword: '',
@@ -157,7 +158,7 @@ export default defineComponent({
       () => props.defaultData,
       (val) => {
         if (val) {
-          bannerItemForm.value = val
+          state.bannerItemForm = val
         } else {
           resetForm()
         }
@@ -168,16 +169,14 @@ export default defineComponent({
     )
 
     return {
-      bannerItemForm,
+      ...toRefs(state),
       bannerItemFormRules,
       previewList,
       beforeUpload,
       uploadImageToOSS,
       handleFileChange,
-      ELFormRef,
       handleSubmit,
       resetForm,
-      typeOptions,
     }
   },
 })

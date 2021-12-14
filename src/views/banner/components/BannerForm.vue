@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, PropType, watch } from 'vue'
+import { defineComponent, computed, PropType, watch, reactive, toRefs } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { Plus } from '@element-plus/icons'
 import { FileHandler, ElFile } from 'element-plus/lib/components/upload/src/upload.type'
@@ -58,11 +58,15 @@ export default defineComponent({
     },
   },
   setup(props) {
-    let bannerForm = ref<BannerModel>({
-      name: '',
-      title: '',
-      description: '',
-      img: '',
+    const state = reactive({
+      bannerForm: {
+        name: '',
+        title: '',
+        description: '',
+        img: '',
+      } as BannerModel,
+      ELFormRef: null as null | ELFormCtx,
+      fileList: [] as ElFile[],
     })
 
     const bannerFormRules = {
@@ -82,32 +86,28 @@ export default defineComponent({
       ],
     }
 
-    const ELFormRef = ref<null | ELFormCtx>(null)
-
-    const fileList = ref<ElFile[]>([])
-
     const previewList = computed(() => {
-      return [bannerForm.value.img]
+      return [state.bannerForm.img]
     })
 
     const beforeUpload = () => {
       return true
     }
     const handleFileChange: FileHandler = (file) => {
-      fileList.value = []
-      fileList.value.push(file.raw)
+      state.fileList = []
+      state.fileList.push(file.raw)
     }
 
     const uploadImageToOSS = async () => {
       try {
         const form = new FormData()
-        const file = fileList.value[0]
+        const file = state.fileList[0]
         form.append('file', file)
         const res = await uploadFileToOSS(form)
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
         if (code === SUCCESS_CODE) {
-          bannerForm.value.img = res.data.data.url
+          state.bannerForm.img = res.data.data.url
           ElMessage.success(`${message}`)
         } else {
           ElMessage.error(`${message}`)
@@ -120,15 +120,16 @@ export default defineComponent({
 
     const handleSubmit = (): Promise<BannerModel> => {
       return new Promise((resolve) => {
-        ELFormRef.value?.validate((valid) => {
+        state.ELFormRef?.validate((valid) => {
           if (valid) {
-            resolve(bannerForm.value)
+            resolve(state.bannerForm)
           }
         })
       })
     }
+
     const resetForm = () => {
-      bannerForm.value = {
+      state.bannerForm = {
         name: '',
         title: '',
         description: '',
@@ -140,7 +141,7 @@ export default defineComponent({
       () => props.defaultData,
       (val) => {
         if (val) {
-          bannerForm.value = val
+          state.bannerForm = val
         } else {
           resetForm()
         }
@@ -151,13 +152,12 @@ export default defineComponent({
     )
 
     return {
-      bannerForm,
+      ...toRefs(state),
       bannerFormRules,
       previewList,
       beforeUpload,
       uploadImageToOSS,
       handleFileChange,
-      ELFormRef,
       handleSubmit,
       resetForm,
     }
