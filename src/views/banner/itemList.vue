@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, reactive, toRefs } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -67,14 +67,13 @@ export default defineComponent({
   setup() {
     const route = useRoute()
 
-    const dialogVisible = ref(false)
-    const tableData = ref([])
-
-    const bannerItemFormRef = ref<null | BannerItemFormCtx>(null)
-
-    const isEdit = ref(false)
-
-    const currentRow = ref<BannerItemModel | undefined>(undefined)
+    const state = reactive({
+      dialogVisible: false,
+      tableData: [],
+      bannerItemFormRef: null as null | BannerItemFormCtx,
+      isEdit: false,
+      currentRow: null as null | BannerItemModel,
+    })
 
     const initBannerItemList = async () => {
       try {
@@ -84,7 +83,7 @@ export default defineComponent({
         const message = lodashGet(res, 'data.message')
         if (code === SUCCESS_CODE) {
           const list = lodashGet(res, 'data.data.bannerItems')
-          tableData.value = list
+          state.tableData = list
         } else {
           ElMessage.error(`${message}`)
         }
@@ -126,32 +125,32 @@ export default defineComponent({
     }
 
     const handleCancel = () => {
-      dialogVisible.value = false
-      bannerItemFormRef.value?.resetForm()
+      state.dialogVisible = false
+      state.bannerItemFormRef?.resetForm()
     }
 
     const handleEdit = (row: BannerItemModel) => {
-      isEdit.value = true
-      dialogVisible.value = true
-      currentRow.value = row
+      state.isEdit = true
+      state.dialogVisible = true
+      state.currentRow = row
     }
 
     const handleCreate = () => {
-      isEdit.value = false
-      dialogVisible.value = true
-      currentRow.value = undefined
+      state.isEdit = false
+      state.dialogVisible = true
+      state.currentRow = null
     }
 
     const handleSubmit = async () => {
       try {
-        let bannerItemForm = await bannerItemFormRef.value?.handleSubmit()
+        let bannerItemForm = await state.bannerItemFormRef?.handleSubmit()
         let res = null
         if (bannerItemForm) {
-          if (isEdit.value) {
+          if (state.isEdit) {
             // 编辑
             res = await editBannerItemApi({
               ...bannerItemForm,
-              id: currentRow.value?.id,
+              id: state.currentRow?.id,
             })
           } else {
             //新增
@@ -163,33 +162,30 @@ export default defineComponent({
           const code = lodashGet(res, 'data.code')
           const message = lodashGet(res, 'data.message')
           if (code === SUCCESS_CODE) {
-            dialogVisible.value = false
+            state.dialogVisible = false
             ElMessage.success(`${message}`)
             initBannerItemList()
-            bannerItemFormRef.value?.resetForm()
+            state.bannerItemFormRef?.resetForm()
           } else {
             ElMessage.error(`${message}`)
           }
         }
       } catch (e) {
-        ElMessage.error(`${isEdit.value ? '更新' : '创建'}时发生错误`)
+        ElMessage.error(`${state.isEdit ? '更新' : '创建'}时发生错误`)
       }
     }
 
     const dialogTitle = computed(() => {
-      return isEdit.value ? '编辑BannerItem' : '新增BannerItem'
+      return state.isEdit ? '编辑BannerItem' : '新增BannerItem'
     })
 
     return {
-      tableData,
+      ...toRefs(state),
       handleDelete,
       handleCancel,
-      dialogVisible,
       handleCreate,
       handleSubmit,
-      bannerItemFormRef,
       handleEdit,
-      currentRow,
       dialogTitle,
     }
   },
@@ -197,13 +193,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.banner-list {
+.banner-item-list {
   &__table {
     margin-top: 24px;
-  }
-  &__pagination {
-    margin-top: 24px;
-    text-align: right;
   }
 }
 </style>
