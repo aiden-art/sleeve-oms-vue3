@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, PropType, watch } from 'vue'
+import { defineComponent, ref, computed, PropType, watch, reactive, toRefs } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { Plus } from '@element-plus/icons'
 import { FileHandler, ElFile } from 'element-plus/lib/components/upload/src/upload.type'
@@ -62,17 +62,21 @@ export default defineComponent({
   components: { Plus },
   props: {
     defaultData: {
-      type: Object as PropType<CategoryModel>,
+      type: Object as PropType<null | CategoryModel>,
       default: null,
     },
   },
   setup(props) {
-    let categoryForm = ref<CategoryModel>({
-      name: '',
-      description: '',
-      img: '',
-      online: 0,
-      index: 0,
+    const state = reactive({
+      categoryForm: {
+        name: '',
+        description: '',
+        img: '',
+        online: 0,
+        index: 0,
+      } as CategoryModel,
+      ELFormRef: null as null | ELFormCtx,
+      fileList: [] as ElFile[],
     })
 
     const categoryFormRules = {
@@ -92,32 +96,28 @@ export default defineComponent({
       ],
     }
 
-    const ELFormRef = ref<null | ELFormCtx>(null)
-
-    const fileList = ref<ElFile[]>([])
-
     const previewList = computed(() => {
-      return [categoryForm.value.img]
+      return [state.categoryForm.img]
     })
 
     const beforeUpload = () => {
       return true
     }
     const handleFileChange: FileHandler = (file) => {
-      fileList.value = []
-      fileList.value.push(file.raw)
+      state.fileList = []
+      state.fileList.push(file.raw)
     }
 
     const uploadImageToOSS = async () => {
       try {
         const form = new FormData()
-        const file = fileList.value[0]
+        const file = state.fileList[0]
         form.append('file', file)
         const res = await uploadFileToOSS(form)
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
         if (code === SUCCESS_CODE) {
-          categoryForm.value.img = res.data.data.url
+          state.categoryForm.img = res.data.data.url
           ElMessage.success(`${message}`)
         } else {
           ElMessage.error(`${message}`)
@@ -130,15 +130,15 @@ export default defineComponent({
 
     const handleSubmit = (): Promise<CategoryModel> => {
       return new Promise((resolve) => {
-        ELFormRef.value?.validate((valid) => {
+        state.ELFormRef?.validate((valid) => {
           if (valid) {
-            resolve(categoryForm.value)
+            resolve(state.categoryForm)
           }
         })
       })
     }
     const resetForm = () => {
-      categoryForm.value = {
+      state.categoryForm = {
         name: '',
         description: '',
         img: '',
@@ -151,7 +151,7 @@ export default defineComponent({
       () => props.defaultData,
       (val) => {
         if (val) {
-          categoryForm.value = val
+          state.categoryForm = val
         } else {
           resetForm()
         }
@@ -162,13 +162,12 @@ export default defineComponent({
     )
 
     return {
-      categoryForm,
+      ...toRefs(state),
       categoryFormRules,
       previewList,
       beforeUpload,
-      uploadImageToOSS,
       handleFileChange,
-      ELFormRef,
+      uploadImageToOSS,
       handleSubmit,
       resetForm,
     }

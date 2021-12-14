@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent, toRefs, watch, reactive } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -81,40 +81,30 @@ export default defineComponent({
   components: { CategoryForm },
   setup() {
     const router = useRouter()
+    const state = reactive({
+      dialogVisible: false,
+      tableData: [],
+      total: 0,
+      categoryFormRef: null as null | CategoryFormCtx,
+      isEdit: false,
+      currentRow: null as null | CategoryModel,
+      currentPage: 1,
+      pageSize: 10,
+    })
 
-    const dialogVisible = ref(false)
-    const tableData = ref([])
-    const total = ref(0)
-
-    const isAdvanced = ref(false)
-
-    const categoryFormRef = ref<null | CategoryFormCtx>(null)
-
-    const isEdit = ref(false)
-
-    const currentRow = ref<CategoryModel | undefined>(undefined)
-
-    const currentPage = ref(1)
-
-    const pageSize = ref(10)
-
-    const handleAnvanced = () => {
-      isAdvanced.value = !isAdvanced.value
-    }
-
-    const initBannerList = async () => {
+    const initCategoryList = async () => {
       try {
         let res = await getCategoryListApi({
-          pageNum: currentPage.value,
-          pageSize: pageSize.value,
+          pageNum: state.currentPage,
+          pageSize: state.pageSize,
         })
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
         const totalNum = lodashGet(res, 'data.data.total')
         if (code === SUCCESS_CODE) {
           const list = lodashGet(res, 'data.data.list')
-          tableData.value = list
-          total.value = totalNum
+          state.tableData = list
+          state.total = totalNum
         } else {
           ElMessage.error(`${message}`)
         }
@@ -124,8 +114,6 @@ export default defineComponent({
       }
     }
 
-    initBannerList()
-
     const deleteBannerItem = async (id: number) => {
       try {
         let res = await deleteCategoryApi(id)
@@ -133,7 +121,7 @@ export default defineComponent({
         const message = lodashGet(res, 'data.message')
         if (code === SUCCESS_CODE) {
           ElMessage.success('删除成功')
-          initBannerList()
+          initCategoryList()
         } else {
           ElMessage.error(`${message}`)
         }
@@ -156,8 +144,8 @@ export default defineComponent({
     }
 
     const handleCancel = () => {
-      dialogVisible.value = false
-      categoryFormRef.value?.resetForm()
+      state.dialogVisible = false
+      state.categoryFormRef?.resetForm()
     }
 
     const handleBannerItem = (row: CategoryModel) => {
@@ -167,27 +155,27 @@ export default defineComponent({
     }
 
     const handleEdit = (row: CategoryModel) => {
-      isEdit.value = true
-      dialogVisible.value = true
-      currentRow.value = row
+      state.isEdit = true
+      state.dialogVisible = true
+      state.currentRow = row
     }
 
     const handleCreate = () => {
-      isEdit.value = false
-      dialogVisible.value = true
-      currentRow.value = undefined
+      state.isEdit = false
+      state.dialogVisible = true
+      state.currentRow = null
     }
 
     const handleSubmit = async () => {
       try {
-        let bannerForm = await categoryFormRef.value?.handleSubmit()
+        let bannerForm = await state.categoryFormRef?.handleSubmit()
         let res = null
         if (bannerForm) {
-          if (isEdit.value) {
+          if (state.isEdit) {
             // 编辑
             res = await updateCategoryApi({
               ...bannerForm,
-              id: currentRow.value?.id,
+              id: state.currentRow?.id,
             })
           } else {
             //新增
@@ -196,53 +184,47 @@ export default defineComponent({
           const code = lodashGet(res, 'data.code')
           const message = lodashGet(res, 'data.message')
           if (code === SUCCESS_CODE) {
-            dialogVisible.value = false
+            state.dialogVisible = false
             ElMessage.success(`${message}`)
-            initBannerList()
-            categoryFormRef.value?.resetForm()
+            initCategoryList()
+            state.categoryFormRef?.resetForm()
           } else {
             ElMessage.error(`${message}`)
           }
         }
       } catch (e) {
-        ElMessage.error(`${isEdit.value ? '更新' : '创建'}时发生错误`)
+        ElMessage.error(`${state.isEdit ? '更新' : '创建'}时发生错误`)
       }
     }
 
     const dialogTitle = computed(() => {
-      return isEdit.value ? '编辑分类' : '新增分类'
+      return state.isEdit ? '编辑分类' : '新增分类'
     })
 
     watch(
-      () => currentPage.value,
+      () => state.currentPage,
       () => {
-        initBannerList()
+        initCategoryList()
       }
     )
 
     watch(
-      () => pageSize.value,
+      () => state.pageSize,
       () => {
-        initBannerList()
+        initCategoryList()
       }
     )
 
+    initCategoryList()
+
     return {
-      tableData,
-      total,
-      currentPage,
-      pageSize,
-      isAdvanced,
-      handleAnvanced,
+      ...toRefs(state),
       handleDelete,
       handleCancel,
       handleBannerItem,
-      dialogVisible,
       handleCreate,
       handleSubmit,
-      categoryFormRef,
       handleEdit,
-      currentRow,
       dialogTitle,
     }
   },
