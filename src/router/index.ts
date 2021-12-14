@@ -139,7 +139,7 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: '/grid/list',
         name: 'GridList',
-        component: () => import('../components/HelloWorld.vue'),
+        component: () => import('../views/grid/index.vue'),
         meta: {
           icon: '',
           title: '六宫格列表',

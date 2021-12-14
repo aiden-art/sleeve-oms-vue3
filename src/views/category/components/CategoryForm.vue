@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, PropType, watch, reactive, toRefs } from 'vue'
+import { defineComponent, computed, PropType, watch, reactive, toRefs } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { Plus } from '@element-plus/icons'
 import { FileHandler, ElFile } from 'element-plus/lib/components/upload/src/upload.type'
