@@ -12,7 +12,7 @@
     </el-dialog>
     <el-row class="mb-4">
       <el-col :span="24">
-        <el-button size="small" type="primary" @click="handleCreate">创建分类</el-button>
+        <el-button size="small" type="primary" @click="handleCreate">创建子分类</el-button>
       </el-col>
     </el-row>
     <!-- 列表 -->
@@ -35,26 +35,12 @@
         <el-table-column prop="description" label="描述" />
         <el-table-column label="操作" width="180">
           <template #default="scope">
-            <el-button class="font-normal" type="text" size="small" @click="handleBannerItem(scope.row)">
-              子分类
-            </el-button>
-            <el-divider direction="vertical"></el-divider>
             <el-button class="font-normal" type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
             <el-divider direction="vertical"></el-divider>
             <el-button class="font-normal" type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
-        v-model:pageSize="pageSize"
-        v-model:currentPage="currentPage"
-        small
-        class="category-list__pagination"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="sizes,prev, pager, next"
-        :total="total"
-      >
-      </el-pagination>
     </el-card>
   </div>
 </template>
@@ -62,10 +48,10 @@
 <script lang="ts">
 import { computed, defineComponent, toRefs, watch, reactive } from 'vue'
 import { get as lodashGet } from 'lodash'
-import { useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
-  getCategoryListApi,
+  getCategoryDetailApi,
   deleteCategoryApi,
   CategoryModel,
   updateCategoryApi,
@@ -80,7 +66,7 @@ export default defineComponent({
   name: 'CategoryList',
   components: { CategoryForm },
   setup() {
-    const router = useRouter()
+    const route = useRoute()
     const state = reactive({
       dialogVisible: false,
       tableData: [],
@@ -88,23 +74,18 @@ export default defineComponent({
       categoryFormRef: null as null | CategoryFormCtx,
       isEdit: false,
       currentRow: null as null | CategoryModel,
-      currentPage: 1,
-      pageSize: 10,
+      parentCategoryID: Number(route.params.categoryID),
     })
 
-    const initCategoryList = async () => {
+    const initSubCategoryList = async () => {
       try {
-        let res = await getCategoryListApi({
-          pageNum: state.currentPage,
-          pageSize: state.pageSize,
-        })
+        if (!state.parentCategoryID) return
+        let res = await getCategoryDetailApi(state.parentCategoryID)
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
-        const totalNum = lodashGet(res, 'data.data.total')
         if (code === SUCCESS_CODE) {
-          const list = lodashGet(res, 'data.data.list')
+          const list = lodashGet(res, 'data.data.children')
           state.tableData = list
-          state.total = totalNum
         } else {
           ElMessage.error(`${message}`)
         }
@@ -121,7 +102,7 @@ export default defineComponent({
         const message = lodashGet(res, 'data.message')
         if (code === SUCCESS_CODE) {
           ElMessage.success('删除成功')
-          initCategoryList()
+          initSubCategoryList()
         } else {
           ElMessage.error(`${message}`)
         }
@@ -146,12 +127,6 @@ export default defineComponent({
     const handleCancel = () => {
       state.dialogVisible = false
       state.categoryFormRef?.resetForm()
-    }
-
-    const handleBannerItem = (row: CategoryModel) => {
-      router.push({
-        path: `/category/sub/${row.id}`,
-      })
     }
 
     const handleEdit = (row: CategoryModel) => {
@@ -179,14 +154,17 @@ export default defineComponent({
             })
           } else {
             //新增
-            res = await createCategoryApi(bannerForm)
+            res = await createCategoryApi({
+              ...bannerForm,
+              parentId: state.parentCategoryID,
+            })
           }
           const code = lodashGet(res, 'data.code')
           const message = lodashGet(res, 'data.message')
           if (code === SUCCESS_CODE) {
             state.dialogVisible = false
             ElMessage.success(`${message}`)
-            initCategoryList()
+            initSubCategoryList()
             state.categoryFormRef?.resetForm()
           } else {
             ElMessage.error(`${message}`)
@@ -202,26 +180,19 @@ export default defineComponent({
     })
 
     watch(
-      () => state.currentPage,
+      () => route.params.categoryID,
       () => {
-        initCategoryList()
+        initSubCategoryList()
+      },
+      {
+        immediate: true,
       }
     )
-
-    watch(
-      () => state.pageSize,
-      () => {
-        initCategoryList()
-      }
-    )
-
-    initCategoryList()
 
     return {
       ...toRefs(state),
       handleDelete,
       handleCancel,
-      handleBannerItem,
       handleCreate,
       handleSubmit,
       handleEdit,

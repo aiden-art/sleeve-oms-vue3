@@ -123,6 +123,17 @@ export const routes: Array<RouteRecordRaw> = [
           showLink: true,
         },
       },
+      {
+        path: '/category/sub/:categoryID',
+        name: 'CategorySubList',
+        component: () => import('../views/category/sub.vue'),
+        meta: {
+          hidden: true,
+          icon: '',
+          title: '子分类列表',
+          showLink: true,
+        },
+      },
     ],
   },
   {
