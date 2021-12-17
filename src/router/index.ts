@@ -137,10 +137,10 @@ export const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: '/grid',
-    name: 'Grid',
+    path: '/grid-category',
+    name: 'GridCategory',
     component: layout,
-    redirect: '/grid/list',
+    redirect: '/grid-category/list',
     meta: {
       icon: Grid,
       title: '六宫格管理',
@@ -148,9 +148,9 @@ export const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: '/grid/list',
-        name: 'GridList',
-        component: () => import('../views/grid/index.vue'),
+        path: '/grid-category/list',
+        name: 'GridCategoryList',
+        component: () => import('../views/gridCategory/index.vue'),
         meta: {
           icon: '',
           title: '六宫格列表',

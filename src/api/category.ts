@@ -55,3 +55,12 @@ export const createCategoryApi = (data: CategoryModel): APIResponseType<null> =>
     data,
   })
 }
+
+//查询所有的二级分类
+export const getSubCategoryListApi = (data?: BasePageParams): APIResponseType<BaseListModel<CategoryModel>> => {
+  return $axios({
+    method: 'get',
+    url: '/v1/category/sub/list',
+    data,
+  })
+}
