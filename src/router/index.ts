@@ -163,7 +163,7 @@ export const routes: Array<RouteRecordRaw> = [
     path: '/spec',
     name: 'Spec',
     component: layout,
-    redirect: '/spec/list',
+    redirect: '/spec-key/list',
     meta: {
       icon: Suitcase,
       title: '规格管理',
@@ -171,9 +171,9 @@ export const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: '/spec/list',
-        name: 'SpecList',
-        component: () => import('../components/HelloWorld.vue'),
+        path: '/spec-key/list',
+        name: 'SpecKeyList',
+        component: () => import('../views/spec/key.vue'),
         meta: {
           icon: '',
           title: '规格名列表',
@@ -181,12 +181,13 @@ export const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: '/spec/add',
-        name: 'SpecAdd',
-        component: () => import('../components/HelloWorld.vue'),
+        path: '/spec-value/:specKeyId',
+        name: 'SpecValue',
+        component: () => import('../views/spec/value.vue'),
         meta: {
+          hidden: true,
           icon: '',
-          title: '创建规格名',
+          title: '规格值列表',
           showLink: true,
         },
       },
