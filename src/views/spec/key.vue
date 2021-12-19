@@ -61,7 +61,7 @@ import SpecKeyForm from './components/SpecKeyForm.vue'
 type SpecFormCtx = InstanceType<typeof SpecKeyForm>
 
 export default defineComponent({
-  name: 'CategoryList',
+  name: 'SpecKeyList',
   components: { SpecKeyForm },
   setup() {
     const router = useRouter()

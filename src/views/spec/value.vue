@@ -45,7 +45,7 @@ import SpecValueForm from './components/SpecValueForm.vue'
 type SpecValueFormCtx = InstanceType<typeof SpecValueForm>
 
 export default defineComponent({
-  name: 'CategoryList',
+  name: 'SpecValueList',
   components: { SpecValueForm },
   setup() {
     const route = useRoute()
