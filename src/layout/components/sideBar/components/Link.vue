@@ -4,27 +4,27 @@
   </component>
 </template>
 
-<script>
-  import { defineComponent } from 'vue'
+<script lang="ts">
+import { defineComponent } from 'vue'
 
-  export default defineComponent({
-    name: 'Link',
-    props: {
-      to: {
-        type: String,
-        required: true,
-      },
+export default defineComponent({
+  name: 'Link',
+  props: {
+    to: {
+      type: String,
+      required: true,
     },
-    setup() {
-      const linkProps = (to) => {
-        return {
-          to: to,
-        }
-      }
+  },
+  setup() {
+    const linkProps = (to: any) => {
       return {
-        type: 'router-link',
-        linkProps,
+        to: to,
       }
-    },
-  })
+    }
+    return {
+      type: 'router-link',
+      linkProps,
+    }
+  },
+})
 </script>

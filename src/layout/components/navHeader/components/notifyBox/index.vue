@@ -12,10 +12,10 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent } from 'vue'
-  export default defineComponent({
-    name: 'Notify',
-  })
+import { defineComponent } from 'vue'
+export default defineComponent({
+  name: 'Notify',
+})
 </script>
 
 <style lang="scss" scoped src="./index.scss"></style>
