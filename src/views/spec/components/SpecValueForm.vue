@@ -1,6 +1,6 @@
 <template>
   <div class="spec-form">
-    <el-form ref="ELFormRef" size="small" :model="specValueForm" label-width="80px" :rules="categoryFormRules">
+    <el-form ref="ELFormRef" size="small" :model="specValueForm" label-width="120px" :rules="specValueFormRules">
       <el-form-item label="规格值名称" prop="name">
         <el-input v-model="specValueForm.value" placeholder="请输入名称"></el-input>
       </el-form-item>
@@ -36,18 +36,11 @@ export default defineComponent({
       ELFormRef: null as null | ELFormCtx,
     })
 
-    const categoryFormRules = {
-      name: [
+    const specValueFormRules = {
+      value: [
         {
           required: true,
-          message: '名称不能为空',
-          trigger: 'blur',
-        },
-      ],
-      img: [
-        {
-          required: true,
-          message: '图片不能为空',
+          message: '规格值不能为空',
           trigger: 'blur',
         },
       ],
@@ -85,7 +78,7 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      categoryFormRules,
+      specValueFormRules,
       handleSubmit,
       resetForm,
     }

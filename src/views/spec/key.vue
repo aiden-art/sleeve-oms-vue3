@@ -139,6 +139,7 @@ export default defineComponent({
     }
 
     const handleEdit = (row: SpecKeyModel) => {
+      console.log(row)
       state.isEdit = true
       state.dialogVisible = true
       state.currentRow = row

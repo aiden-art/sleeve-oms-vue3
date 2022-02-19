@@ -132,11 +132,13 @@ export default defineComponent({
             res = await updateSpecValueApi({
               ...specValueForm,
               id: state.currentRow?.id,
+              specKeyId: state.specKeyId,
             })
           } else {
             //新增
             res = await createSpecValueApi({
               ...specValueForm,
+              specKeyId: state.specKeyId,
             })
           }
           const code = lodashGet(res, 'data.code')

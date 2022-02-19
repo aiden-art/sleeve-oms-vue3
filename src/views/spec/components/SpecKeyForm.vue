@@ -1,11 +1,11 @@
 <template>
   <div class="spec-form">
-    <el-form ref="ELFormRef" size="small" :model="specKeyForm" label-width="80px" :rules="categoryFormRules">
+    <el-form ref="ELFormRef" size="small" :model="specKeyForm" label-width="120px" :rules="categoryFormRules">
       <el-form-item label="规格名名称" prop="name">
         <el-input v-model="specKeyForm.name" placeholder="请输入名称"></el-input>
       </el-form-item>
       <el-form-item label="规格名描述" prop="description">
-        <el-input-number v-model="specKeyForm.description"></el-input-number>
+        <el-input v-model="specKeyForm.description"></el-input>
       </el-form-item>
 
       <el-form-item label="单位" placeholder="请输入单位" prop="unit">
