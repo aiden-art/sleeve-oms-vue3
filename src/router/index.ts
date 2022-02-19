@@ -230,7 +230,7 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: '/sku/list',
         name: 'SkuList',
-        component: () => import('../components/HelloWorld.vue'),
+        component: () => import('../views/sku/index.vue'),
         meta: {
           icon: '',
           title: 'SKU列表',
