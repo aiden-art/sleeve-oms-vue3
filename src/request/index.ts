@@ -1,7 +1,11 @@
 import axios from 'axios'
 
+//环境变量
+const mode = import.meta.env.MODE
+//接口地址
+const prodBaseURL = import.meta.env.VITE_BASE_URL as string
 const $axios = axios.create({
-  baseURL: '/',
+  baseURL: mode === 'production' ? prodBaseURL : '/',
   timeout: 5 * 1000,
 })
 
