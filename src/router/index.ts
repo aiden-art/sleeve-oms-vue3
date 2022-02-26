@@ -207,7 +207,7 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: '/spu/list',
         name: 'SpuList',
-        component: () => import('../components/HelloWorld.vue'),
+        component: () => import('../views/spu/index.vue'),
         meta: {
           icon: '',
           title: 'Spu列表',
@@ -253,7 +253,7 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: '/theme/list',
         name: 'ThemeList',
-        component: () => import('../components/HelloWorld.vue'),
+        component: () => import('../views/theme/index.vue'),
         meta: {
           icon: '',
           title: '主题列表',
