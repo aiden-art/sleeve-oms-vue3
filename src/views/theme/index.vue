@@ -12,7 +12,7 @@
     </el-dialog>
     <el-row class="mb-4">
       <el-col :span="24">
-        <el-button size="small" type="primary" @click="handleCreate">添加主题</el-button>
+        <el-button size="small" type="primary" @click="handleCreate">添加专题</el-button>
       </el-col>
     </el-row>
     <!-- 列表 -->
@@ -23,7 +23,7 @@
           <template #default="scope">
             <el-image
               v-if="scope.row.titleImg"
-              class="block max-w-1/5"
+              class="block max-w-1/2"
               :src="scope.row.titleImg"
               :preview-src-list="[scope.row.titleImg]"
             ></el-image>
@@ -33,11 +33,31 @@
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="tplName" label="模板名" />
         <el-table-column prop="description" label="描述" />
-        <el-table-column prop="entranceImg" label="入口图" />
-        <el-table-column prop="internalTopImg" label="外链图" />
-        <el-table-column label="操作" width="120">
+        <el-table-column prop="entranceImg" label="入口图">
+          <template #default="scope">
+            <el-image
+              v-if="scope.row.entranceImg"
+              class="block max-w-1/2"
+              :src="scope.row.entranceImg"
+              :preview-src-list="[scope.row.entranceImg]"
+            ></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column prop="internalTopImg" label="外链图">
+          <template #default="scope">
+            <el-image
+              v-if="scope.row.internalTopImg"
+              class="block max-w-1/2"
+              :src="scope.row.internalTopImg"
+              :preview-src-list="[scope.row.internalTopImg]"
+            ></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="180">
           <template #default="scope">
             <el-button class="font-normal" type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-button class="font-normal" type="text" size="small" @click="handleAddSpu(scope.row)">新增SPU</el-button>
             <el-divider direction="vertical"></el-divider>
             <el-button class="font-normal" type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
           </template>
@@ -139,12 +159,6 @@ export default defineComponent({
       state.dialogVisible = false
     }
 
-    const handleSpecValue = (row: ThemeModel) => {
-      router.push({
-        path: `/spec-value/${row.id}`,
-      })
-    }
-
     const handleEdit = (row: ThemeModel) => {
       console.log(row)
       state.isEdit = true
@@ -156,6 +170,12 @@ export default defineComponent({
       state.isEdit = false
       state.dialogVisible = true
       state.currentRow = null
+    }
+
+    const handleAddSpu = (row: ThemeModel) => {
+      router.push({
+        path: `/theme/spu-list/${row.id}`,
+      })
     }
 
     const handleSubmit = async () => {
@@ -190,7 +210,7 @@ export default defineComponent({
     }
 
     const dialogTitle = computed(() => {
-      return state.isEdit ? '编辑SKU' : '新增SKU'
+      return state.isEdit ? '编辑专题' : '新增专题'
     })
 
     watch(
@@ -213,10 +233,10 @@ export default defineComponent({
       ...toRefs(state),
       handleDelete,
       handleCancel,
-      handleSpecValue,
       handleCreate,
       handleSubmit,
       handleEdit,
+      handleAddSpu,
       dialogTitle,
     }
   },

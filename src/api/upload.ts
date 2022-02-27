@@ -10,7 +10,7 @@ export interface UploadResModel {
 export const uploadFileToOSS = (data: FormData): APIResponseType<UploadResModel> => {
   return $axios({
     method: 'post',
-    url: '/upload/oss',
+    url: '/v1/upload/oss',
     data,
   })
 }

@@ -1,3 +1,11 @@
+/*
+ * @Author: genfa.zeng
+ * @Date: 2022-02-26 23:08:55
+ * @LastEditors: genfa.zeng
+ * @LastEditTime: 2022-02-27 14:17:49
+ * @FilePath: /sleeve-oms/src/api/theme.ts
+ * @Description:Theme API接口
+ */
 import $axios from '@/request'
 import { APIResponseType, BaseListModel, BasePageParams } from './apiTypes'
 import { SpuModel } from './spu'
@@ -8,7 +16,7 @@ export interface ThemeModel {
   description: string
   name: string
   tplName: string
-  entranceName: string
+  entranceImg: string
   extend: string
   internalTopImg: string
   titleImg: string
@@ -63,7 +71,7 @@ export const addThemeSpuApi = (themeId: number, spuId: number): APIResponseType<
 
 export const getThemeSpuListApi = (themeId: number): APIResponseType<SpuModel[]> => {
   return $axios({
-    method: 'post',
+    method: 'get',
     url: `/v1/theme/${themeId}/spu/list`,
   })
 }

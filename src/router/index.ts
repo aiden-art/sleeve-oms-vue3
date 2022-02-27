@@ -2,7 +2,7 @@
  * @Author: genfa.zeng
  * @Date: 2021-02-01 10:14:04
  * @LastEditors: genfa.zeng
- * @LastEditTime: 2021-12-07 15:04:16
+ * @LastEditTime: 2022-02-27 14:11:54
  * @Description:
  */
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
@@ -257,6 +257,16 @@ export const routes: Array<RouteRecordRaw> = [
         meta: {
           icon: '',
           title: '主题列表',
+          showLink: true,
+        },
+      },
+      {
+        path: '/theme/spu-list/:themeId',
+        name: 'ThemeSpuList',
+        component: () => import('../views/theme/spuList.vue'),
+        meta: {
+          icon: '',
+          title: '主题SPU列表',
           showLink: true,
         },
       },

@@ -7,5 +7,18 @@
   },
   "[dotenv]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  // 头部注释
+  "fileheader.customMade": {
+    "Author": "genfa.zeng", // 创建文件的作者
+    "Date": "Do not edit", // 文件创建时间(不变)
+    "LastEditors": "genfa.zeng", // 文件最后编辑者
+    // 由于编辑文件就会变更最后编辑时间，多人协作中合并的时候会导致merge
+    // 可以将时间颗粒度改为周、或者月，这样冲突就减少很多。搜索变更时间格式: dateFormat
+    "LastEditTime": "Do not edit", // 文件最后编辑时间
+    // 输出相对路径，类似: /文件夹名称/src/index.js
+    "FilePath": "Do not edit", // 文件在项目中的相对路径 自动更新
+    // 插件会自动将光标移动到Description选项中 方便输入 Description字段可以在specialOptions更改
+    "Description": "" // 介绍文件的作用、文件的入参、出参。
   }
 }

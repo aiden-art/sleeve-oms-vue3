@@ -1,90 +1,108 @@
 <template>
   <div class="spec-form">
-    <el-form ref="ELFormRef" size="small" :model="spuForm" label-width="120px" :rules="spuFormRules">
-      <el-form-item label="标题" prop="title">
-        <el-input v-model="spuForm.title" placeholder="请输入标题"></el-input>
-      </el-form-item>
-      <el-form-item label="名称" prop="name">
-        <el-input v-model="spuForm.name" placeholder="请输入名称"></el-input>
-      </el-form-item>
-      <el-form-item label="主题描述" prop="description">
-        <el-input v-model="spuForm.description"></el-input>
-      </el-form-item>
-      <el-form-item label="模版名" prop="tplName">
-        <el-input v-model="spuForm.tplName"></el-input>
-      </el-form-item>
-      <el-form-item label="是否上线" prop="online">
-        <el-switch
-          v-model="spuForm.online"
-          :active-value="1"
-          :inactive-value="0"
-          active-text="上线"
-          inactive-text="下线"
-        ></el-switch>
-      </el-form-item>
-      <el-form-item label="标题图" prop="titleImg">
-        <div class="flex banner-form__upload">
-          <el-image
-            v-if="spuForm.titleImg"
-            style="width: 100px; height: 100px"
-            :src="spuForm.titleImg"
-            :preview-src-list="previewList"
-          ></el-image>
-          <el-upload
-            class="ml-2 banner-form__upload"
-            action=""
-            list-type="picture-card"
-            :http-request="uploadImageToOSS"
-            :show-file-list="false"
-            :on-change="handleFileChange"
-            :before-upload="beforeUpload"
-          >
-            <el-icon><Plus /></el-icon>
-          </el-upload>
-        </div>
-      </el-form-item>
-      <el-form-item label="入口图" prop="entranceImg">
-        <div class="flex banner-form__upload">
-          <el-image
-            v-if="spuForm.entranceImg"
-            style="width: 100px; height: 100px"
-            :src="spuForm.entranceImg"
-            :preview-src-list="previewList"
-          ></el-image>
-          <el-upload
-            class="ml-2 banner-form__upload"
-            action=""
-            list-type="picture-card"
-            :http-request="uploadImageToOSS"
-            :show-file-list="false"
-            :on-change="handleFileChange"
-            :before-upload="beforeUpload"
-          >
-            <el-icon><Plus /></el-icon>
-          </el-upload>
-        </div>
-      </el-form-item>
-      <el-form-item label="外部图" prop="internalTopImg">
-        <div class="flex banner-form__upload">
-          <el-image
-            v-if="spuForm.internalTopImg"
-            style="width: 100px; height: 100px"
-            :src="spuForm.internalTopImg"
-            :preview-src-list="previewList"
-          ></el-image>
-          <el-upload
-            class="ml-2 banner-form__upload"
-            action=""
-            list-type="picture-card"
-            :http-request="uploadImageToOSS"
-            :show-file-list="false"
-            :on-change="handleFileChange"
-            :before-upload="beforeUpload"
-          >
-            <el-icon><Plus /></el-icon>
-          </el-upload>
-        </div>
-      </el-form-item>
+    <el-form ref="ELFormRef" :model="themeForm" :rules="themeFormRules">
+      <el-row justify="space-between">
+        <el-col :xs="24" :lg="11">
+          <el-form-item label="标题" prop="title">
+            <el-input v-model="themeForm.title" placeholder="请输入标题"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :lg="11">
+          <el-form-item label="名称" prop="name">
+            <el-input v-model="themeForm.name" placeholder="请输入名称"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :lg="11">
+          <el-form-item label="主题描述" prop="description">
+            <el-input v-model="themeForm.description"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :lg="11">
+          <el-form-item label="模版名" prop="tplName">
+            <el-input v-model="themeForm.tplName"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :lg="11">
+          <el-form-item label="是否上线" prop="online">
+            <el-switch
+              v-model="themeForm.online"
+              :active-value="1"
+              :inactive-value="0"
+              active-text="上线"
+              inactive-text="下线"
+            ></el-switch>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :lg="11">
+          <el-form-item label="标题图" prop="titleImg">
+            <div class="flex banner-form__upload">
+              <el-image
+                v-if="themeForm.titleImg"
+                style="width: 60px; height: 60px"
+                :src="themeForm.titleImg"
+                :preview-src-list="previewTitleImgList"
+              ></el-image>
+              <el-upload
+                class="ml-2 banner-form__upload"
+                action=""
+                list-type="picture-card"
+                :http-request="uploadTitleImageToOSS"
+                :show-file-list="false"
+                :on-change="handleTitleImgFileChange"
+                :before-upload="beforeUpload"
+              >
+                <el-icon><Plus /></el-icon>
+              </el-upload>
+            </div>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :lg="11">
+          <el-form-item label="入口图" prop="entranceImg">
+            <div class="flex banner-form__upload">
+              <el-image
+                v-if="themeForm.entranceImg"
+                style="width: 60px; height: 60px"
+                :src="themeForm.entranceImg"
+                :preview-src-list="previewEntranceImgList"
+              ></el-image>
+              <el-upload
+                class="ml-2 banner-form__upload"
+                action=""
+                list-type="picture-card"
+                :http-request="uploadEntranceImageToOSS"
+                :show-file-list="false"
+                :on-change="handleEntranceImgFileChange"
+                :before-upload="beforeUpload"
+              >
+                <el-icon><Plus /></el-icon>
+              </el-upload>
+            </div>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :lg="11">
+          <el-form-item label="外部图" prop="internalTopImg">
+            <div class="flex banner-form__upload">
+              <el-image
+                v-if="themeForm.internalTopImg"
+                style="width: 60px; height: 60px"
+                :src="themeForm.internalTopImg"
+                :preview-src-list="previewInternalImgList"
+              ></el-image>
+              <el-upload
+                class="ml-2 banner-form__upload"
+                action=""
+                list-type="picture-card"
+                :http-request="uploadInternalImageToOSS"
+                :show-file-list="false"
+                :on-change="handleInternalImgFileChange"
+                :before-upload="beforeUpload"
+              >
+                <el-icon><Plus /></el-icon>
+              </el-upload>
+            </div>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
   </div>
 </template>
@@ -103,7 +121,7 @@ type ELFormCtx = InstanceType<typeof ElForm>
 
 export default defineComponent({
   // 规格名操作表单，用于编辑和新增
-  name: 'SpuForm',
+  name: 'ThemeForm',
   components: { Plus },
   props: {
     defaultData: {
@@ -113,13 +131,15 @@ export default defineComponent({
   },
   setup(props) {
     const state = reactive({
-      spuForm: {} as ThemeModel,
+      themeForm: {} as ThemeModel,
       spuList: [],
       ELFormRef: null as null | ELFormCtx,
-      fileList: [] as ElFile[],
+      titleImgFileList: [] as ElFile[],
+      entranceImgFileList: [] as ElFile[],
+      internalImgFileList: [] as ElFile[],
     })
 
-    const spuFormRules = {
+    const themeFormRules = {
       title: [
         {
           required: true,
@@ -140,35 +160,91 @@ export default defineComponent({
       return new Promise((resolve) => {
         state.ELFormRef?.validate((valid) => {
           if (valid) {
-            resolve(state.spuForm)
+            resolve(state.themeForm)
           }
         })
       })
     }
 
-    const previewList = computed(() => {
-      return [state.spuForm.titleImg]
+    const previewTitleImgList = computed(() => {
+      return [state.themeForm.titleImg]
+    })
+    const previewEntranceImgList = computed(() => {
+      return [state.themeForm.entranceImg]
+    })
+    const previewInternalImgList = computed(() => {
+      return [state.themeForm.internalTopImg]
     })
 
     const beforeUpload = () => {
       return true
     }
 
-    const handleFileChange: FileHandler = (file) => {
-      state.fileList = []
-      state.fileList.push(file.raw)
+    const handleTitleImgFileChange: FileHandler = (file) => {
+      state.titleImgFileList = []
+      state.titleImgFileList.push(file.raw)
     }
 
-    const uploadImageToOSS = async () => {
+    const handleEntranceImgFileChange: FileHandler = (file) => {
+      state.entranceImgFileList = []
+      state.entranceImgFileList.push(file.raw)
+    }
+
+    const handleInternalImgFileChange: FileHandler = (file) => {
+      state.internalImgFileList = []
+      state.internalImgFileList.push(file.raw)
+    }
+
+    const uploadTitleImageToOSS = async () => {
       try {
         const form = new FormData()
-        const file = state.fileList[0]
+        const file = state.titleImgFileList[0]
         form.append('file', file)
         const res = await uploadFileToOSS(form)
         const code = lodashGet(res, 'data.code')
         const message = lodashGet(res, 'data.message')
         if (code === SUCCESS_CODE) {
-          state.spuForm.titleImg = res.data.data.url
+          state.themeForm.titleImg = res.data.data.url
+          ElMessage.success(`${message}`)
+        } else {
+          ElMessage.error(`${message}`)
+        }
+      } catch (e) {
+        console.log(e)
+        ElMessage.error('上传时发生错误')
+      }
+    }
+
+    const uploadEntranceImageToOSS = async () => {
+      try {
+        const form = new FormData()
+        const file = state.entranceImgFileList[0]
+        form.append('file', file)
+        const res = await uploadFileToOSS(form)
+        const code = lodashGet(res, 'data.code')
+        const message = lodashGet(res, 'data.message')
+        if (code === SUCCESS_CODE) {
+          state.themeForm.entranceImg = res.data.data.url
+          ElMessage.success(`${message}`)
+        } else {
+          ElMessage.error(`${message}`)
+        }
+      } catch (e) {
+        console.log(e)
+        ElMessage.error('上传时发生错误')
+      }
+    }
+
+    const uploadInternalImageToOSS = async () => {
+      try {
+        const form = new FormData()
+        const file = state.internalImgFileList[0]
+        form.append('file', file)
+        const res = await uploadFileToOSS(form)
+        const code = lodashGet(res, 'data.code')
+        const message = lodashGet(res, 'data.message')
+        if (code === SUCCESS_CODE) {
+          state.themeForm.internalTopImg = res.data.data.url
           ElMessage.success(`${message}`)
         } else {
           ElMessage.error(`${message}`)
@@ -180,7 +256,7 @@ export default defineComponent({
     }
 
     const resetForm = () => {
-      state.spuForm = {
+      state.themeForm = {
         id: undefined,
         title: '',
       } as ThemeModel
@@ -190,7 +266,7 @@ export default defineComponent({
       () => props.defaultData,
       (val) => {
         if (val) {
-          state.spuForm = val
+          state.themeForm = val
         } else {
           resetForm()
         }
@@ -202,13 +278,19 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      spuFormRules,
+      themeFormRules,
       handleSubmit,
       resetForm,
-      previewList,
+      previewTitleImgList,
+      previewEntranceImgList,
+      previewInternalImgList,
       beforeUpload,
-      handleFileChange,
-      uploadImageToOSS,
+      handleTitleImgFileChange,
+      handleEntranceImgFileChange,
+      handleInternalImgFileChange,
+      uploadTitleImageToOSS,
+      uploadEntranceImageToOSS,
+      uploadInternalImageToOSS,
     }
   },
 })
@@ -217,12 +299,13 @@ export default defineComponent({
 <style lang="scss">
 .spec-form {
   .el-upload--picture-card {
-    width: 100px;
-    height: 100px;
+    width: 60px;
+    height: 60px;
     display: flex;
     @include flex(row, center, center);
     .el-icon {
       margin: 0;
+      font-size: 12px;
     }
   }
 }
