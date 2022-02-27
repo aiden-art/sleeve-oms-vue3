@@ -1,7 +1,7 @@
 <template>
   <div class="spu-list">
     <!-- 新增弹窗 -->
-    <el-dialog v-model="dialogVisible" :title="dialogTitle">
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" :close-on-click-modal="false">
       <SpuForm ref="SpuFormRef" :default-data="currentRow" />
       <template #footer>
         <span class="dialog-footer">
@@ -33,7 +33,11 @@
         <el-table-column prop="subtitle" label="副标题" />
         <el-table-column prop="categoryId" label="分类id" />
         <el-table-column prop="price" label="价格(元)" />
-        <el-table-column prop="online" label="是否上架" />
+        <el-table-column prop="online" label="是否上架">
+          <template #default="scope">
+            <el-switch :model-value="scope.online" :active-value="1" :inactive-value="0"></el-switch>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="120">
           <template #default="scope">
             <el-button class="font-normal" type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
@@ -61,7 +65,7 @@ import { computed, defineComponent, toRefs, watch, reactive } from 'vue'
 import { get as lodashGet } from 'lodash'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getSpuListApi, deleteSpuApi, SpuModel, updateSpuApi, createSpuApi } from '@/api/spu'
+import { getSpuListApi, deleteSpuApi, SpuModel, updateSpuApi, createSpuApi, getSpuApi } from '@/api/spu'
 import { SUCCESS_CODE } from '@/config/constant'
 import SpuForm from './components/SpuForm.vue'
 
@@ -144,11 +148,28 @@ export default defineComponent({
       })
     }
 
-    const handleEdit = (row: SpuModel) => {
+    const handleEdit = async (row: SpuModel) => {
       console.log(row)
       state.isEdit = true
-      state.dialogVisible = true
-      state.currentRow = row
+      //查询详情接口
+      if (row.id) {
+        await getSpuDetail(row.id)
+        state.dialogVisible = true
+      }
+    }
+
+    const getSpuDetail = async (spuId: number) => {
+      try {
+        let res = await getSpuApi(spuId)
+        const code = lodashGet(res, 'data.code')
+        const message = lodashGet(res, 'data.message')
+        if (code === SUCCESS_CODE) {
+          const detailRow = lodashGet(res, 'data.data')
+          state.currentRow = detailRow
+        } else {
+          ElMessage.error(`${message}`)
+        }
+      } catch (e) {}
     }
 
     const handleCreate = () => {
