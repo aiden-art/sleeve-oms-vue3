@@ -19,8 +19,8 @@
         </el-col>
         <el-col :lg="11">
           <el-form-item label="分类" prop="categoryId">
-            <el-select v-model="spuForm.categoryId" placeholder="选择分类">
-              <el-option v-for="item in subCategoryList" :key="item.id" :value="item.id">
+            <el-select v-model="spuForm.categoryId" placeholder="选择分类" style="width: 100%">
+              <el-option v-for="item in subCategoryList" :key="item.id" :label="`${item.name}`" :value="item.id">
                 {{ item.id + item.name }}
               </el-option>
             </el-select>
@@ -91,13 +91,17 @@
         <el-col :lg="11">
           <el-form-item label="轮播图" prop="spuImgs">
             <div class="flex banner-form__upload">
-              <el-image
-                v-for="(item, index) in spuForm.spuImgs || []"
-                :key="index"
-                style="width: 60px; height: 60px; margin-right: 4px"
-                :src="item.img"
-                :preview-src-list="spuForm.spuImgs"
-              ></el-image>
+              <span v-for="(item, index) in spuForm.spuImgs || []" :key="index">
+                <el-image
+                  style="width: 60px; height: 60px; margin-right: 4px"
+                  :src="item"
+                  :preview-src-list="spuForm.spuImgs"
+                ></el-image>
+                <span class="el-upload-list__item-delete" @click="handleRemove(file)">
+                  <el-icon><delete /></el-icon>
+                </span>
+              </span>
+
               <el-upload
                 class="ml-2 banner-form__upload"
                 action=""
@@ -119,7 +123,7 @@
                 v-for="(item, index) in spuForm.spuDetailImgs || []"
                 :key="index"
                 style="width: 60px; height: 60px; margin-right: 4px"
-                :src="item.img"
+                :src="item"
                 :preview-src-list="spuForm.spuDetailImgs"
               ></el-image>
               <el-upload
@@ -142,18 +146,18 @@
           </el-form-item>
         </el-col>
         <el-col :lg="11">
-          <el-form-item label="规格" prop="spuKeys">
-            <el-select v-model="spuForm.spuKeys" multiple placeholder="选择规格">
-              <el-option v-for="item in specKeyList" :key="item.id" :value="item.id">
+          <el-form-item label="规格" prop="specKeys">
+            <el-select v-model="spuForm.specKeys" style="width: 100%" multiple placeholder="选择规格">
+              <el-option v-for="item in specKeyList" :key="item.id" :value="item.id" :label="`${item.id} ${item.name}`">
                 {{ item.id + item.name }}
               </el-option>
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :lg="11">
-          <el-form-item v-if="spuForm?.spuKeys?.length > 0" label="可视规格" prop="sketchSpecId">
-            <el-select v-model="spuForm.sketchSpecId" placeholder="选择可视规格">
-              <el-option v-for="item in spuForm.spuKeys" :key="item" :value="item">{{ item }}</el-option>
+          <el-form-item v-if="spuForm?.specKeys?.length > 0" label="可视规格" prop="sketchSpecId">
+            <el-select v-model="spuForm.sketchSpecId" placeholder="选择可视规格" style="width: 100%">
+              <el-option v-for="item in spuForm.specKeys" :key="item" :value="item">{{ item }}</el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -171,7 +175,7 @@
 <script lang="ts">
 import { defineComponent, PropType, watch, reactive, toRefs } from 'vue'
 import { ElMessage, ElForm } from 'element-plus'
-import { Plus } from '@element-plus/icons'
+import { Plus, Delete } from '@element-plus/icons'
 import { FileHandler, ElFile } from 'element-plus/lib/components/upload/src/upload.type'
 import { uploadFileToOSS } from '@/api/upload'
 import { SpuDetailImgModel, SpuImgModel, SpuModel } from '@/api/spu'
@@ -184,7 +188,7 @@ type ELFormCtx = InstanceType<typeof ElForm>
 
 export default defineComponent({
   name: 'SpuForm',
-  components: { Plus },
+  components: { Plus, Delete },
   props: {
     defaultData: {
       type: Object as PropType<null | SpuModel>,
