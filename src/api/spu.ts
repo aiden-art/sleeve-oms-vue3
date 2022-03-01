@@ -45,9 +45,9 @@ export interface SpuModel {
   isTest: number
   spuThemeImg: string
   forThemeImg: string
-  spuImgs?: SpuImgModel[]
-  spuDetailImgs?: SpuDetailImgModel[]
-  spuKeys?: SpuKeyModel[]
+  spuImgs?: string[]
+  spuDetailImgs?: string[]
+  specKeys?: number[]
 }
 
 export const createSpuApi = (data: SpuModel): APIResponseType<null> => {

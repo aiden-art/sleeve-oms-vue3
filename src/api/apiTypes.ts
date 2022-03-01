@@ -6,7 +6,7 @@ export interface BaseListModel<T> {
 }
 
 export interface BaseResponseModel<T> {
-  code: number
+  code: string
   message: string
   data: T
 }

@@ -44,100 +44,22 @@
         </el-col>
         <el-col :lg="11">
           <el-form-item label="主图" prop="img">
-            <div class="flex banner-form__upload">
-              <el-image
-                v-if="spuForm.img"
-                style="width: 60px; height: 60px"
-                :src="spuForm.img"
-                :preview-src-list="[spuForm.img]"
-              ></el-image>
-              <el-upload
-                class="ml-2 banner-form__upload"
-                action=""
-                list-type="picture-card"
-                :http-request="uploadImageToOSS"
-                :show-file-list="false"
-                :on-change="handleFileChange"
-                :before-upload="beforeUpload"
-              >
-                <el-icon><Plus /></el-icon>
-              </el-upload>
-            </div>
+            <ImageUpload v-model="spuForm.img" :limit="1" />
           </el-form-item>
         </el-col>
         <el-col :lg="11">
           <el-form-item label="主题图" prop="forThemeImg">
-            <div class="flex banner-form__upload">
-              <el-image
-                v-if="spuForm.forThemeImg"
-                style="width: 60px; height: 60px"
-                :src="spuForm.forThemeImg"
-                :preview-src-list="[spuForm.forThemeImg]"
-              ></el-image>
-              <el-upload
-                class="ml-2 banner-form__upload"
-                action=""
-                list-type="picture-card"
-                :http-request="uploadThemeImgToOSS"
-                :show-file-list="false"
-                :on-change="handleThemeImgFileChange"
-                :before-upload="beforeUpload"
-              >
-                <el-icon><Plus /></el-icon>
-              </el-upload>
-            </div>
+            <ImageUpload v-model="spuForm.forThemeImg" :limit="1" />
           </el-form-item>
         </el-col>
         <el-col :lg="11">
           <el-form-item label="轮播图" prop="spuImgs">
-            <div class="flex banner-form__upload">
-              <span v-for="(item, index) in spuForm.spuImgs || []" :key="index">
-                <el-image
-                  style="width: 60px; height: 60px; margin-right: 4px"
-                  :src="item"
-                  :preview-src-list="spuForm.spuImgs"
-                ></el-image>
-                <span class="el-upload-list__item-delete" @click="handleRemove(file)">
-                  <el-icon><delete /></el-icon>
-                </span>
-              </span>
-
-              <el-upload
-                class="ml-2 banner-form__upload"
-                action=""
-                list-type="picture-card"
-                :http-request="uploadSpuImgsToOSS"
-                :show-file-list="false"
-                :on-change="handleSpuImgsFileChange"
-                :before-upload="beforeUpload"
-              >
-                <el-icon><Plus /></el-icon>
-              </el-upload>
-            </div>
+            <ImageUpload v-model="spuForm.spuImgs" />
           </el-form-item>
         </el-col>
         <el-col :lg="11">
           <el-form-item label="详情图" prop="spuDetailImgs">
-            <div class="flex banner-form__upload">
-              <el-image
-                v-for="(item, index) in spuForm.spuDetailImgs || []"
-                :key="index"
-                style="width: 60px; height: 60px; margin-right: 4px"
-                :src="item"
-                :preview-src-list="spuForm.spuDetailImgs"
-              ></el-image>
-              <el-upload
-                class="ml-2 banner-form__upload"
-                action=""
-                list-type="picture-card"
-                :http-request="uploadSpuDetailImgsToOSS"
-                :show-file-list="false"
-                :on-change="handleDetailImgsFileChange"
-                :before-upload="beforeUpload"
-              >
-                <el-icon><Plus /></el-icon>
-              </el-upload>
-            </div>
+            <ImageUpload v-model="spuForm.spuDetailImgs" />
           </el-form-item>
         </el-col>
         <el-col :lg="11">
@@ -155,7 +77,7 @@
           </el-form-item>
         </el-col>
         <el-col :lg="11">
-          <el-form-item v-if="spuForm?.specKeys?.length > 0" label="可视规格" prop="sketchSpecId">
+          <el-form-item v-if="spuForm.specKeys && spuForm.specKeys?.length > 0" label="可视规格" prop="sketchSpecId">
             <el-select v-model="spuForm.sketchSpecId" placeholder="选择可视规格" style="width: 100%">
               <el-option v-for="item in spuForm.specKeys" :key="item" :value="item">{{ item }}</el-option>
             </el-select>
@@ -175,20 +97,18 @@
 <script lang="ts">
 import { defineComponent, PropType, watch, reactive, toRefs } from 'vue'
 import { ElMessage, ElForm } from 'element-plus'
-import { Plus, Delete } from '@element-plus/icons'
-import { FileHandler, ElFile } from 'element-plus/lib/components/upload/src/upload.type'
-import { uploadFileToOSS } from '@/api/upload'
-import { SpuDetailImgModel, SpuImgModel, SpuModel } from '@/api/spu'
+import { SpuModel } from '@/api/spu'
 import { getSpecKeyListApi, SpecKeyModel } from '@/api/spec'
 import { CategoryModel, getSubCategoryListApi } from '@/api/category'
 import { get as lodashGet } from 'lodash'
 import { SUCCESS_CODE } from '@/config/constant'
+import ImageUpload from '@/components/ImageUpload/index.vue'
 
 type ELFormCtx = InstanceType<typeof ElForm>
 
 export default defineComponent({
   name: 'SpuForm',
-  components: { Plus, Delete },
+  components: { ImageUpload },
   props: {
     defaultData: {
       type: Object as PropType<null | SpuModel>,
@@ -207,16 +127,12 @@ export default defineComponent({
         tags: '',
         description: '',
         sketchSpecId: 0,
-        spuImgs: [] as SpuImgModel[],
-        spuDetailImgs: [] as SpuDetailImgModel[],
+        spuImgs: [] as string[],
+        spuDetailImgs: [] as string[],
       } as SpuModel,
       specKeyList: [] as SpecKeyModel[],
       subCategoryList: [] as CategoryModel[],
       ELFormRef: null as null | ELFormCtx,
-      fileList: [] as ElFile[],
-      themeFileList: [] as ElFile[],
-      spuImgsFileList: [] as ElFile[],
-      detailImgsFileList: [] as ElFile[],
     })
 
     const spuFormRules = {}
@@ -229,127 +145,6 @@ export default defineComponent({
           }
         })
       })
-    }
-
-    const beforeUpload = () => {
-      return true
-    }
-
-    const handleFileChange: FileHandler = (file) => {
-      state.fileList = []
-      state.fileList.push(file.raw)
-    }
-
-    const handleThemeImgFileChange: FileHandler = (file) => {
-      state.themeFileList = []
-      state.themeFileList.push(file.raw)
-    }
-    const handleSpuImgsFileChange: FileHandler = (file) => {
-      state.spuImgsFileList = []
-      state.spuImgsFileList.push(file.raw)
-    }
-    const handleDetailImgsFileChange: FileHandler = (file) => {
-      state.detailImgsFileList = []
-      state.detailImgsFileList.push(file.raw)
-    }
-
-    const uploadImageToOSS = async () => {
-      try {
-        const form = new FormData()
-        const file = state.fileList[0]
-        form.append('file', file)
-        const res = await uploadFileToOSS(form)
-        const code = lodashGet(res, 'data.code')
-        const message = lodashGet(res, 'data.message')
-        if (code === SUCCESS_CODE) {
-          state.spuForm.img = res.data.data.url
-          ElMessage.success(`${message}`)
-        } else {
-          ElMessage.error(`${message}`)
-        }
-      } catch (e) {
-        console.log(e)
-        ElMessage.error('上传时发生错误')
-      }
-    }
-
-    const uploadThemeImgToOSS = async () => {
-      try {
-        const form = new FormData()
-        const file = state.themeFileList[0]
-        form.append('file', file)
-        const res = await uploadFileToOSS(form)
-        const code = lodashGet(res, 'data.code')
-        const message = lodashGet(res, 'data.message')
-        if (code === SUCCESS_CODE) {
-          state.spuForm.forThemeImg = res.data.data.url
-          ElMessage.success(`${message}`)
-        } else {
-          ElMessage.error(`${message}`)
-        }
-      } catch (e) {
-        console.log(e)
-        ElMessage.error('上传时发生错误')
-      }
-    }
-
-    const uploadSpuImgsToOSS = async () => {
-      try {
-        const form = new FormData()
-        const file = state.spuImgsFileList[0]
-        state.spuImgsFileList = []
-        form.append('file', file)
-        const res = await uploadFileToOSS(form)
-        const code = lodashGet(res, 'data.code')
-        const message = lodashGet(res, 'data.message')
-        if (code === SUCCESS_CODE) {
-          if (!Array.isArray(state.spuForm.spuImgs)) {
-            state.spuForm.spuImgs = []
-          }
-          if (state.spuForm.id) {
-            state.spuForm.spuImgs.push({
-              spuId: state.spuForm.id,
-              img: res.data.data.url,
-            })
-          }
-
-          ElMessage.success(`${message}`)
-        } else {
-          ElMessage.error(`${message}`)
-        }
-      } catch (e) {
-        console.log(e)
-        ElMessage.error('上传时发生错误')
-      }
-    }
-
-    const uploadSpuDetailImgsToOSS = async () => {
-      try {
-        const form = new FormData()
-        const file = state.detailImgsFileList[0]
-        form.append('file', file)
-        const res = await uploadFileToOSS(form)
-        const code = lodashGet(res, 'data.code')
-        const message = lodashGet(res, 'data.message')
-        if (code === SUCCESS_CODE) {
-          if (!Array.isArray(state.spuForm.spuDetailImgs)) {
-            state.spuForm.spuDetailImgs = []
-          }
-          if (state.spuForm.id) {
-            state.spuForm.spuDetailImgs.push({
-              spuId: state.spuForm.id,
-              img: res.data.data.url,
-              index: 1,
-            })
-          }
-          ElMessage.success(`${message}`)
-        } else {
-          ElMessage.error(`${message}`)
-        }
-      } catch (e) {
-        console.log(e)
-        ElMessage.error('上传时发生错误')
-      }
     }
 
     const resetForm = () => {
@@ -407,15 +202,6 @@ export default defineComponent({
       spuFormRules,
       handleSubmit,
       resetForm,
-      beforeUpload,
-      handleFileChange,
-      handleThemeImgFileChange,
-      handleSpuImgsFileChange,
-      handleDetailImgsFileChange,
-      uploadImageToOSS,
-      uploadThemeImgToOSS,
-      uploadSpuImgsToOSS,
-      uploadSpuDetailImgsToOSS,
     }
   },
 })
