@@ -4,7 +4,7 @@
     list-type="picture-card"
     :limit="limit"
     :http-request="uploadImageToOSS"
-    :on-preview="handlePictureCardPreview"
+    :on-preview="handleImagePreview"
     :on-remove="handleRemove"
     :on-change="handleFileChange"
     :before-upload="beforeUpload"
@@ -25,6 +25,7 @@ import { get as lodashGet } from 'lodash'
 import { SUCCESS_CODE } from '@/config/constant'
 import { uploadFileToOSS, UploadResModel } from '@/api/upload'
 import { BaseResponseModel } from '@/api/apiTypes'
+import ImagePreview from '@/components/ImagePreview'
 
 type ModelValueType = undefined | string | string[]
 
@@ -110,7 +111,7 @@ export default defineComponent({
     }
 
     const handleRemove = (file: UploadFile, fileList: UploadFile[]) => {
-      const leaveFileUrls = fileList.map((file) => file.url!)
+      const leaveFileUrls = fileList.map((file) => (file.url ? file.url : ''))
       state.imageList = leaveFileUrls
       if (props.limit === 1) {
         emitEvents('')
@@ -119,9 +120,14 @@ export default defineComponent({
       }
     }
 
-    const handlePictureCardPreview = (file: UploadFile) => {
-      state.dialogImageUrl = file.url!
-      state.dialogVisible = true
+    const handleImagePreview = (file: UploadFile) => {
+      if (!file.url) return
+      const urls = [file.url]
+      ImagePreview.init({
+        urlList: urls,
+        zIndex: 3000,
+        hideOnClickModal: false,
+      })
     }
 
     const setDefaultFileList = (modelValue: ModelValueType) => {
@@ -161,7 +167,7 @@ export default defineComponent({
       uploadImageToOSS,
       handleRemove,
       handleFileChange,
-      handlePictureCardPreview,
+      handleImagePreview,
     }
   },
 })
