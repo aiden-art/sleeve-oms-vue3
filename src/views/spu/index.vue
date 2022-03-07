@@ -21,7 +21,7 @@
         <el-skeleton :rows="10" animated />
       </template>
       <template v-else>
-        <el-table :data="tableData" style="width: 100%">
+        <el-table :data="tableData" stripe style="width: 100%">
           <el-table-column prop="id" label="ID" width="80" />
           <el-table-column prop="title" show-overflow-tooltip label="标题" align="center" />
           <el-table-column prop="subtitle" show-overflow-tooltip label="副标题" align="center" />
