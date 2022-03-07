@@ -6,7 +6,7 @@ const mode = import.meta.env.MODE
 const prodBaseURL = import.meta.env.VITE_BASE_URL as string
 const $axios = axios.create({
   baseURL: mode === 'production' ? prodBaseURL : '/',
-  timeout: 5 * 1000,
+  timeout: 50 * 1000,
 })
 
 $axios.interceptors.request.use((config) => {

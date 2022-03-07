@@ -2,7 +2,7 @@
   <div class="spu-list">
     <!-- 新增弹窗 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" :close-on-click-modal="false">
-      <SpuForm ref="SpuFormRef" :default-data="currentRow" />
+      <SpuForm v-if="dialogVisible" ref="SpuFormRef" :default-data="currentRow" />
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="handleCancel">取消</el-button>
@@ -17,45 +17,55 @@
     </el-row>
     <!-- 列表 -->
     <el-card class="spec-list__table" shadow="hover">
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="id" label="ID" />
-        <el-table-column prop="img" label="图片">
-          <template #default="scope">
-            <el-image
-              v-if="scope.row.img"
-              class="block max-w-1/5"
-              :src="scope.row.img"
-              :preview-src-list="[scope.row.img]"
-            ></el-image>
-          </template>
-        </el-table-column>
-        <el-table-column prop="title" label="标题" />
-        <el-table-column prop="subtitle" label="副标题" />
-        <el-table-column prop="categoryId" label="分类id" />
-        <el-table-column prop="price" label="价格(元)" />
-        <el-table-column prop="online" label="是否上架">
-          <template #default="scope">
-            <el-switch :model-value="scope.online" :active-value="1" :inactive-value="0"></el-switch>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="120">
-          <template #default="scope">
-            <el-button class="font-normal" type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-divider direction="vertical"></el-divider>
-            <el-button class="font-normal" type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        v-model:pageSize="pageSize"
-        v-model:currentPage="currentPage"
-        small
-        class="spec-list__pagination"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="sizes,prev, pager, next"
-        :total="total"
-      >
-      </el-pagination>
+      <template v-if="tableData.length === 0">
+        <el-skeleton :rows="10" animated />
+      </template>
+      <template v-else>
+        <el-table :data="tableData" style="width: 100%">
+          <el-table-column prop="id" label="ID" width="80" />
+          <el-table-column prop="title" show-overflow-tooltip label="标题" align="center" />
+          <el-table-column prop="subtitle" show-overflow-tooltip label="副标题" align="center" />
+          <el-table-column prop="img" label="图片" align="center">
+            <template #default="scope">
+              <el-image
+                v-if="scope.row.img"
+                class="inline-block w-60"
+                :src="scope.row.img"
+                :preview-src-list="[scope.row.img]"
+              ></el-image>
+            </template>
+          </el-table-column>
+          <el-table-column prop="categoryId" label="分类" align="center">
+            <template #default="scope">
+              {{ globalDataStore.subCategoryMap.get(scope.row.categoryId) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="price" label="价格(元)" align="center" />
+          <el-table-column prop="online" label="是否上架" align="center">
+            <template #default="scope">
+              <el-switch :model-value="scope.row.online" :active-value="1" :inactive-value="0"></el-switch>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="120">
+            <template #default="scope">
+              <el-button class="font-normal" type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-divider direction="vertical"></el-divider>
+              <el-button class="font-normal" type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          v-model:pageSize="pageSize"
+          v-model:currentPage="currentPage"
+          small
+          background
+          :page-sizes="[10, 20, 50, 100]"
+          class="spec-list__pagination"
+          layout="prev, pager, next"
+          :total="total"
+        >
+        </el-pagination>
+      </template>
     </el-card>
   </div>
 </template>
@@ -68,6 +78,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { getSpuListApi, deleteSpuApi, SpuModel, updateSpuApi, createSpuApi, getSpuApi } from '@/api/spu'
 import { SUCCESS_CODE } from '@/config/constant'
 import SpuForm from './components/SpuForm.vue'
+import { useGlobalData } from '@/store/global'
 
 type SpuForm = InstanceType<typeof SpuForm>
 
@@ -76,6 +87,7 @@ export default defineComponent({
   components: { SpuForm },
   setup() {
     const router = useRouter()
+    const globalDataStore = useGlobalData()
     const state = reactive({
       dialogVisible: false,
       tableData: [],
@@ -238,6 +250,7 @@ export default defineComponent({
       handleSubmit,
       handleEdit,
       dialogTitle,
+      globalDataStore,
     }
   },
 })

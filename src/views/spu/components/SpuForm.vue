@@ -20,7 +20,12 @@
         <el-col :lg="11">
           <el-form-item label="分类" prop="categoryId">
             <el-select v-model="spuForm.categoryId" placeholder="选择分类" style="width: 100%">
-              <el-option v-for="item in subCategoryList" :key="item.id" :label="`${item.name}`" :value="item.id">
+              <el-option
+                v-for="item in globalDataStore.subCategoryList"
+                :key="item.id"
+                :label="`${item.name}`"
+                :value="item.id"
+              >
                 {{ item.id + item.name }}
               </el-option>
             </el-select>
@@ -79,7 +84,9 @@
         <el-col :lg="11">
           <el-form-item v-if="spuForm.specKeys && spuForm.specKeys?.length > 0" label="可视规格" prop="sketchSpecId">
             <el-select v-model="spuForm.sketchSpecId" placeholder="选择可视规格" style="width: 100%">
-              <el-option v-for="item in spuForm.specKeys" :key="item" :value="item">{{ item }}</el-option>
+              <el-option v-for="item in specKeysList" :key="item" :value="item.id" :label="`${item.id} ${item.name}`">
+                {{ `${item.id} ${item.name}` }}
+              </el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -95,14 +102,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, watch, reactive, toRefs } from 'vue'
+import { defineComponent, PropType, watch, reactive, toRefs, computed } from 'vue'
 import { ElMessage, ElForm } from 'element-plus'
 import { SpuModel } from '@/api/spu'
 import { getSpecKeyListApi, SpecKeyModel } from '@/api/spec'
-import { CategoryModel, getSubCategoryListApi } from '@/api/category'
+import { CategoryModel } from '@/api/category'
 import { get as lodashGet } from 'lodash'
 import { SUCCESS_CODE } from '@/config/constant'
 import ImageUpload from '@/components/ImageUpload/index.vue'
+import { useGlobalData } from '@/store/global'
 
 type ELFormCtx = InstanceType<typeof ElForm>
 
@@ -116,6 +124,7 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const globalDataStore = useGlobalData()
     const state = reactive({
       spuForm: {
         id: undefined,
@@ -131,6 +140,7 @@ export default defineComponent({
         spuDetailImgs: [] as string[],
       } as SpuModel,
       specKeyList: [] as SpecKeyModel[],
+      specKeyMap: new Map([]) as Map<number, string>,
       subCategoryList: [] as CategoryModel[],
       ELFormRef: null as null | ELFormCtx,
     })
@@ -154,6 +164,16 @@ export default defineComponent({
       } as SpuModel
     }
 
+    const specKeysList = computed(() => {
+      if (state.spuForm.specKeys && state.spuForm.specKeys.length > 0) {
+        return state.spuForm.specKeys?.map((e) => ({
+          id: e,
+          name: state.specKeyMap.get(e),
+        }))
+      }
+      return []
+    })
+
     watch(
       () => props.defaultData,
       (val) => {
@@ -175,33 +195,27 @@ export default defineComponent({
         const message = lodashGet(res, 'data.message')
         if (code === SUCCESS_CODE) {
           const list = lodashGet(res, 'data.data.list')
+          if (list && list.length > 0) {
+            list.forEach((item: SpecKeyModel) => {
+              if (item.id) {
+                state.specKeyMap.set(item.id, item.name)
+              }
+            })
+          }
           state.specKeyList = list
         } else {
           ElMessage.error(`${message}`)
         }
       } catch (e) {}
     }
-
-    const getSubCategoryList = async () => {
-      try {
-        let res = await getSubCategoryListApi()
-        const code = lodashGet(res, 'data.code')
-        const message = lodashGet(res, 'data.message')
-        if (code === SUCCESS_CODE) {
-          const list = lodashGet(res, 'data.data.list')
-          state.subCategoryList = list
-        } else {
-          ElMessage.error(`${message}`)
-        }
-      } catch (e) {}
-    }
-    getSubCategoryList()
     getSpecKeyList()
     return {
       ...toRefs(state),
       spuFormRules,
       handleSubmit,
       resetForm,
+      specKeysList,
+      globalDataStore,
     }
   },
 })
