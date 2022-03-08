@@ -14,6 +14,7 @@ module.exports = {
     width: {
       60: '60px',
       80: '80px',
+      full: '100%',
     },
     maxWidth: {
       '1/10': '10%',

@@ -2,7 +2,7 @@
   <div class="spu-list">
     <!-- 新增弹窗 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle">
-      <SkuForm ref="SkuFormRef" :default-data="currentRow" />
+      <SkuForm v-if="dialogVisible" ref="SkuFormRef" :default-data="currentRow" />
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="handleCancel">取消</el-button>
@@ -17,40 +17,47 @@
     </el-row>
     <!-- 列表 -->
     <el-card class="spec-list__table" shadow="hover">
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="id" label="ID" />
-        <el-table-column prop="img" label="图片">
-          <template #default="scope">
-            <el-image
-              v-if="scope.row.img"
-              class="block max-w-1/5"
-              :src="scope.row.img"
-              :preview-src-list="[scope.row.img]"
-            ></el-image>
-          </template>
-        </el-table-column>
-        <el-table-column prop="title" label="标题" />
-        <el-table-column prop="spuId" label="spu_id" />
-        <el-table-column prop="discountPrice" label="折扣" />
-        <el-table-column prop="price" label="价格(元)" />
-        <el-table-column prop="online" label="是否上架" />
-        <el-table-column prop="code" label="编码" />
-        <el-table-column prop="stock" label="库存(个)" />
-        <el-table-column label="操作" width="120">
-          <template #default="scope">
-            <el-button class="font-normal" type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-divider direction="vertical"></el-divider>
-            <el-button class="font-normal" type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <template v-if="tableData.length === 0">
+        <el-skeleton :rows="18" animated />
+      </template>
+      <template v-else>
+        <el-table :data="tableData" stripe style="width: 100%">
+          <el-table-column prop="id" label="ID" />
+          <el-table-column prop="img" label="图片">
+            <template #default="scope">
+              <el-image
+                v-if="scope.row.img"
+                class="block max-w-1/5"
+                :src="scope.row.img"
+                :preview-src-list="[scope.row.img]"
+              ></el-image>
+            </template>
+          </el-table-column>
+          <el-table-column prop="title" label="标题" />
+          <el-table-column prop="spuId" label="spu_id" />
+          <el-table-column prop="discountPrice" label="折扣" />
+          <el-table-column prop="price" label="价格(元)" />
+          <el-table-column prop="online" label="是否上架" />
+          <el-table-column prop="code" label="编码" />
+          <el-table-column prop="stock" label="库存(个)" />
+          <el-table-column label="操作" width="120">
+            <template #default="scope">
+              <el-button class="font-normal" type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-divider direction="vertical"></el-divider>
+              <el-button class="font-normal" type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </template>
+
       <el-pagination
         v-model:pageSize="pageSize"
         v-model:currentPage="currentPage"
         small
+        background
         class="spec-list__pagination"
         :page-sizes="[10, 20, 50, 100]"
-        layout="sizes,prev, pager, next"
+        layout="prev, pager, next"
         :total="total"
       >
       </el-pagination>
@@ -147,7 +154,6 @@ export default defineComponent({
     }
 
     const handleEdit = (row: SkuModel) => {
-      console.log(row)
       state.isEdit = true
       state.dialogVisible = true
       state.currentRow = row

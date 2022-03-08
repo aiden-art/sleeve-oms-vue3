@@ -1,6 +1,12 @@
 import $axios from '@/request'
 import { APIResponseType, BaseListModel, BasePageParams } from './apiTypes'
 
+export interface SkuSpecModel {
+  key: string
+  keyId: undefined | number
+  valueId: undefined | number
+}
+
 export interface SkuModel {
   id?: number
   price: number
@@ -8,8 +14,8 @@ export interface SkuModel {
   online: number
   img: string
   title: string
-  spuId: number
-  specs: string
+  spuId?: number
+  specs: SkuSpecModel[]
   code: string
   stock: number
   categoryId: number

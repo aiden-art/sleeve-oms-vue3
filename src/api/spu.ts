@@ -1,3 +1,4 @@
+import { SpecKeyModel } from './spec'
 /*
  * @Author: genfa.zeng
  * @Date: 2022-02-26 22:31:27
@@ -50,6 +51,11 @@ export interface SpuModel {
   specKeys?: number[]
 }
 
+export interface SpuSpecModel {
+  id: number
+  specKeys: SpecKeyModel[]
+}
+
 export const createSpuApi = (data: SpuModel): APIResponseType<null> => {
   return $axios({
     method: 'post',
@@ -85,5 +91,12 @@ export const getSpuListApi = (data?: BasePageParams): APIResponseType<BaseListMo
     method: 'get',
     url: `/v1/spu/list`,
     params: data,
+  })
+}
+
+export const getSpuSpecApi = (id: number): APIResponseType<SpuSpecModel> => {
+  return $axios({
+    method: 'get',
+    url: `/v1/spu/spec/${id}`,
   })
 }

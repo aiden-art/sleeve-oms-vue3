@@ -18,7 +18,7 @@
     <!-- 列表 -->
     <el-card class="spec-list__table" shadow="hover">
       <template v-if="tableData.length === 0">
-        <el-skeleton :rows="10" animated />
+        <el-skeleton :rows="18" animated />
       </template>
       <template v-else>
         <el-table :data="tableData" stripe style="width: 100%">
