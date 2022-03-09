@@ -50,7 +50,7 @@
         </el-col>
         <template v-if="skuForm.specs && spuSpecList && spuSpecList.length > 0 && skuForm.specs.length > 0">
           <el-col v-for="(item, index) in skuForm.specs" :key="index" :lg="11">
-            <el-form-item :label="`选择${item.key}`" :prop="`specs.${index}.valueId`">
+            <el-form-item v-if="spuSpecList[index]" :label="`选择${item.key}`" :prop="`specs.${index}.valueId`">
               <el-select v-model="item.valueId" class="w-full" placeholder="选择规格值">
                 <el-option
                   v-for="specValue in spuSpecList[index].specValues"

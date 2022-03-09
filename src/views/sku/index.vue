@@ -22,12 +22,12 @@
       </template>
       <template v-else>
         <el-table :data="tableData" stripe style="width: 100%">
-          <el-table-column prop="id" label="ID" />
+          <el-table-column prop="id" width="80" label="ID" />
           <el-table-column prop="img" label="图片">
             <template #default="scope">
               <el-image
                 v-if="scope.row.img"
-                class="block max-w-1/5"
+                class="inline-block w-60"
                 :src="scope.row.img"
                 :preview-src-list="[scope.row.img]"
               ></el-image>

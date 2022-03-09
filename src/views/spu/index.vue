@@ -83,7 +83,7 @@ import { useGlobalData } from '@/store/global'
 type SpuForm = InstanceType<typeof SpuForm>
 
 export default defineComponent({
-  name: 'SkuList',
+  name: 'SpuList',
   components: { SpuForm },
   setup() {
     const router = useRouter()
@@ -222,7 +222,7 @@ export default defineComponent({
     }
 
     const dialogTitle = computed(() => {
-      return state.isEdit ? '编辑SKU' : '新增SKU'
+      return state.isEdit ? '编辑SPU' : '新增SPU'
     })
 
     watch(
