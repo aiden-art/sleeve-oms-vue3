@@ -6,6 +6,7 @@ COPY package*.json ./
 RUN rm -rf node_modules
 RUN npm install
 COPY . .
+RUN node node_modules/esbuild/install.js
 RUN npm run build
 
 # production stage
