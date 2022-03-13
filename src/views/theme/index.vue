@@ -2,7 +2,7 @@
   <div class="spu-list">
     <!-- 新增弹窗 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle">
-      <ThemeForm ref="SpuFormRef" :default-data="currentRow" />
+      <ThemeForm v-if="dialogVisible" ref="SpuFormRef" :default-data="currentRow" />
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="handleCancel">取消</el-button>

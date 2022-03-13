@@ -2,15 +2,23 @@
  * @Author: genfa.zeng
  * @Date: 2022-02-27 13:46:51
  * @LastEditors: genfa.zeng
- * @LastEditTime: 2022-02-27 13:46:51
+ * @LastEditTime: 2022-03-13 15:14:29
  * @FilePath: /sleeve-oms/src/views/theme/spuList.vue
  * @Description: Theme下SPU管理页面
 -->
 <template>
   <div class="theme-spu-list">
     <div class="flex w-1/3 mb-4">
-      <el-input v-model="state.spuId"></el-input>
-      <el-button size="small" type="primary" @click="handleAddThemeSpu">添加SPU</el-button>
+      <el-select v-model="spuId" filterable placeholder="选择spu">
+        <el-option
+          v-for="item in globalDataStore.spuList"
+          :key="item.id"
+          :label="`${item.id}-${item.title}`"
+          :value="`${item.id}`"
+        >
+        </el-option>
+      </el-select>
+      <el-button class="ml-2" size="small" type="primary" @click="handleAddThemeSpu">添加SPU</el-button>
     </div>
     <el-card class="spec-list__table" shadow="hover">
       <el-table :data="tableData" style="width: 100%">
@@ -45,11 +53,13 @@ import { useRoute } from 'vue-router'
 import { SpuModel } from '@/api/spu'
 import { SUCCESS_CODE } from '@/config/constant'
 import { ElMessage } from 'element-plus'
+import { useGlobalData } from '@/store/global'
 
 type IdType = number | undefined
 export default defineComponent({
   name: 'ThemeSpuList',
   setup() {
+    const globalDataStore = useGlobalData()
     const route = useRoute()
     const state = reactive({
       tableData: [] as SpuModel[],
@@ -99,6 +109,7 @@ export default defineComponent({
       ...toRefs(state),
       handleDelete,
       handleAddThemeSpu,
+      globalDataStore,
     }
   },
 })

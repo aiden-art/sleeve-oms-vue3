@@ -35,71 +35,17 @@
         </el-col>
         <el-col :xs="24" :lg="11">
           <el-form-item label="标题图" prop="titleImg">
-            <div class="flex banner-form__upload">
-              <el-image
-                v-if="themeForm.titleImg"
-                style="width: 60px; height: 60px"
-                :src="themeForm.titleImg"
-                :preview-src-list="previewTitleImgList"
-              ></el-image>
-              <el-upload
-                class="ml-2 banner-form__upload"
-                action=""
-                list-type="picture-card"
-                :http-request="uploadTitleImageToOSS"
-                :show-file-list="false"
-                :on-change="handleTitleImgFileChange"
-                :before-upload="beforeUpload"
-              >
-                <el-icon><Plus /></el-icon>
-              </el-upload>
-            </div>
+            <ImageUpload v-model="themeForm.titleImg" :limit="1" />
           </el-form-item>
         </el-col>
         <el-col :xs="24" :lg="11">
           <el-form-item label="入口图" prop="entranceImg">
-            <div class="flex banner-form__upload">
-              <el-image
-                v-if="themeForm.entranceImg"
-                style="width: 60px; height: 60px"
-                :src="themeForm.entranceImg"
-                :preview-src-list="previewEntranceImgList"
-              ></el-image>
-              <el-upload
-                class="ml-2 banner-form__upload"
-                action=""
-                list-type="picture-card"
-                :http-request="uploadEntranceImageToOSS"
-                :show-file-list="false"
-                :on-change="handleEntranceImgFileChange"
-                :before-upload="beforeUpload"
-              >
-                <el-icon><Plus /></el-icon>
-              </el-upload>
-            </div>
+            <ImageUpload v-model="themeForm.entranceImg" :limit="1" />
           </el-form-item>
         </el-col>
         <el-col :xs="24" :lg="11">
           <el-form-item label="外部图" prop="internalTopImg">
-            <div class="flex banner-form__upload">
-              <el-image
-                v-if="themeForm.internalTopImg"
-                style="width: 60px; height: 60px"
-                :src="themeForm.internalTopImg"
-                :preview-src-list="previewInternalImgList"
-              ></el-image>
-              <el-upload
-                class="ml-2 banner-form__upload"
-                action=""
-                list-type="picture-card"
-                :http-request="uploadInternalImageToOSS"
-                :show-file-list="false"
-                :on-change="handleInternalImgFileChange"
-                :before-upload="beforeUpload"
-              >
-                <el-icon><Plus /></el-icon>
-              </el-upload>
-            </div>
+            <ImageUpload v-model="themeForm.internalTopImg" :limit="1" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -108,21 +54,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, watch, reactive, toRefs, computed } from 'vue'
-import { ElMessage, ElForm } from 'element-plus'
-import { Plus } from '@element-plus/icons'
-import { FileHandler, ElFile } from 'element-plus/lib/components/upload/src/upload.type'
-import { uploadFileToOSS } from '@/api/upload'
+import { defineComponent, PropType, watch, reactive, toRefs } from 'vue'
+import { ElForm } from 'element-plus'
 import { ThemeModel } from '@/api/theme'
-import { get as lodashGet } from 'lodash'
-import { SUCCESS_CODE } from '@/config/constant'
+import ImageUpload from '@/components/ImageUpload/index.vue'
 
 type ELFormCtx = InstanceType<typeof ElForm>
 
 export default defineComponent({
   // 规格名操作表单，用于编辑和新增
   name: 'ThemeForm',
-  components: { Plus },
+  components: { ImageUpload },
   props: {
     defaultData: {
       type: Object as PropType<null | ThemeModel>,
@@ -134,9 +76,6 @@ export default defineComponent({
       themeForm: {} as ThemeModel,
       spuList: [],
       ELFormRef: null as null | ELFormCtx,
-      titleImgFileList: [] as ElFile[],
-      entranceImgFileList: [] as ElFile[],
-      internalImgFileList: [] as ElFile[],
     })
 
     const themeFormRules = {
@@ -166,95 +105,6 @@ export default defineComponent({
       })
     }
 
-    const previewTitleImgList = computed(() => {
-      return [state.themeForm.titleImg]
-    })
-    const previewEntranceImgList = computed(() => {
-      return [state.themeForm.entranceImg]
-    })
-    const previewInternalImgList = computed(() => {
-      return [state.themeForm.internalTopImg]
-    })
-
-    const beforeUpload = () => {
-      return true
-    }
-
-    const handleTitleImgFileChange: FileHandler = (file) => {
-      state.titleImgFileList = []
-      state.titleImgFileList.push(file.raw)
-    }
-
-    const handleEntranceImgFileChange: FileHandler = (file) => {
-      state.entranceImgFileList = []
-      state.entranceImgFileList.push(file.raw)
-    }
-
-    const handleInternalImgFileChange: FileHandler = (file) => {
-      state.internalImgFileList = []
-      state.internalImgFileList.push(file.raw)
-    }
-
-    const uploadTitleImageToOSS = async () => {
-      try {
-        const form = new FormData()
-        const file = state.titleImgFileList[0]
-        form.append('file', file)
-        const res = await uploadFileToOSS(form)
-        const code = lodashGet(res, 'data.code')
-        const message = lodashGet(res, 'data.message')
-        if (code === SUCCESS_CODE) {
-          state.themeForm.titleImg = res.data.data.url
-          ElMessage.success(`${message}`)
-        } else {
-          ElMessage.error(`${message}`)
-        }
-      } catch (e) {
-        console.log(e)
-        ElMessage.error('上传时发生错误')
-      }
-    }
-
-    const uploadEntranceImageToOSS = async () => {
-      try {
-        const form = new FormData()
-        const file = state.entranceImgFileList[0]
-        form.append('file', file)
-        const res = await uploadFileToOSS(form)
-        const code = lodashGet(res, 'data.code')
-        const message = lodashGet(res, 'data.message')
-        if (code === SUCCESS_CODE) {
-          state.themeForm.entranceImg = res.data.data.url
-          ElMessage.success(`${message}`)
-        } else {
-          ElMessage.error(`${message}`)
-        }
-      } catch (e) {
-        console.log(e)
-        ElMessage.error('上传时发生错误')
-      }
-    }
-
-    const uploadInternalImageToOSS = async () => {
-      try {
-        const form = new FormData()
-        const file = state.internalImgFileList[0]
-        form.append('file', file)
-        const res = await uploadFileToOSS(form)
-        const code = lodashGet(res, 'data.code')
-        const message = lodashGet(res, 'data.message')
-        if (code === SUCCESS_CODE) {
-          state.themeForm.internalTopImg = res.data.data.url
-          ElMessage.success(`${message}`)
-        } else {
-          ElMessage.error(`${message}`)
-        }
-      } catch (e) {
-        console.log(e)
-        ElMessage.error('上传时发生错误')
-      }
-    }
-
     const resetForm = () => {
       state.themeForm = {
         id: undefined,
@@ -281,16 +131,6 @@ export default defineComponent({
       themeFormRules,
       handleSubmit,
       resetForm,
-      previewTitleImgList,
-      previewEntranceImgList,
-      previewInternalImgList,
-      beforeUpload,
-      handleTitleImgFileChange,
-      handleEntranceImgFileChange,
-      handleInternalImgFileChange,
-      uploadTitleImageToOSS,
-      uploadEntranceImageToOSS,
-      uploadInternalImageToOSS,
     }
   },
 })

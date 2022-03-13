@@ -2,7 +2,7 @@
  * @Author: genfa.zeng
  * @Date: 2021-02-01 14:59:26
  * @LastEditors: genfa.zeng
- * @LastEditTime: 2021-04-01 17:25:12
+ * @LastEditTime: 2022-03-13 15:08:15
  * @Description: 
 -->
 <template>
@@ -45,7 +45,12 @@ export default defineComponent({
     }
 
     // 初始化全局数据
-    globalData.getSubCategoryList()
+    function initGlobalData() {
+      globalData.getStoreSubCategoryList()
+      globalData.getStoreSpuList()
+    }
+
+    initGlobalData()
 
     return {
       sideBarWidth,

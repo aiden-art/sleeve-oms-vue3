@@ -1,3 +1,11 @@
+/*
+ * @Author: genfa.zeng
+ * @Date: 2022-03-13 14:33:43
+ * @LastEditors: genfa.zeng
+ * @LastEditTime: 2022-03-13 14:58:40
+ * @FilePath: /sleeve-oms/tailwind.config.js
+ * @Description:tailwind配置
+ */
 module.exports = {
   purge: [],
   darkMode: false, // or 'media' or 'class'
@@ -14,6 +22,7 @@ module.exports = {
     width: {
       60: '60px',
       80: '80px',
+      '1/3': '33.33%',
       full: '100%',
     },
     maxWidth: {

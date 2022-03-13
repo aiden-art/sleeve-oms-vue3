@@ -2,7 +2,7 @@
  * @Author: genfa.zeng
  * @Date: 2022-02-26 23:08:55
  * @LastEditors: genfa.zeng
- * @LastEditTime: 2022-02-27 14:17:49
+ * @LastEditTime: 2022-03-13 15:44:30
  * @FilePath: /sleeve-oms/src/api/theme.ts
  * @Description:Theme API接口
  */
@@ -64,7 +64,7 @@ export const getThemeListApi = (data?: BasePageParams): APIResponseType<BaseList
 
 export const addThemeSpuApi = (themeId: number, spuId: number): APIResponseType<null> => {
   return $axios({
-    method: 'post',
+    method: 'get',
     url: `/v1/theme/spu/${themeId}/${spuId}`,
   })
 }
