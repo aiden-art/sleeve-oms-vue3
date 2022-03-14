@@ -1,5 +1,5 @@
 {
-  "name": "vite-project",
+  "name": "sleeve-oms-vue3",
   "version": "0.1.0",
   "scripts": {
     "dev": "vite",
