@@ -26,7 +26,6 @@ export default ({ mode }: ConfigEnv): UserConfig => {
   const viteEnv = wrapperEnv(env)
   const { VITE_PROXY } = viteEnv
   return {
-    base: '/oms/',
     resolve: {
       alias,
     },
