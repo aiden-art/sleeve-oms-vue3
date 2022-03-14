@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/theShapeOfvoice/sleeve-oms-vue3/compare/v0.1.0...v0.1.1) (2022-03-14)
+
+
+### Features
+
+* change build base url ([7ce6c8c](https://github.com/theShapeOfvoice/sleeve-oms-vue3/commit/7ce6c8cd3c0cecdbd04be55fee2049f449eebb20))
+
 ## 0.1.0 (2022-03-14)
 
 
