@@ -33,6 +33,9 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     server: {
       proxy: createProxy(VITE_PROXY),
     },
+    esbuild: {
+      minify: false,
+    },
     css: {
       preprocessorOptions: {
         scss: {
