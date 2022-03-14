@@ -16,7 +16,14 @@
       active-text-color="#1890ff"
       mode="vertical"
     >
-      <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
+      <sidebar-item
+        v-for="route in routes"
+        :key="route.path"
+        :is-collapse="isCollapse"
+        :item="route"
+        :is-first-level="true"
+        :base-path="route.path"
+      />
     </el-menu>
   </div>
 </template>
