@@ -1,6 +1,6 @@
 <template>
   <div class="spec-form">
-    <el-form ref="ELFormRef" size="small" :model="specValueForm" label-width="120px" :rules="specValueFormRules">
+    <el-form ref="ELFormRef" :model="specValueForm" label-width="120px" :rules="specValueFormRules">
       <el-form-item label="规格值名称" prop="name">
         <el-input v-model="specValueForm.value" placeholder="请输入名称"></el-input>
       </el-form-item>

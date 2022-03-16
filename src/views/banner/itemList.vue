@@ -12,7 +12,7 @@
     </el-dialog>
     <el-row class="mt-4">
       <el-col :span="24">
-        <el-button size="small" type="primary" @click="handleCreate">新增</el-button>
+        <el-button type="primary" @click="handleCreate">新增</el-button>
       </el-col>
     </el-row>
     <!-- 列表 -->

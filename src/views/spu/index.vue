@@ -12,7 +12,7 @@
     </el-dialog>
     <el-row class="mb-4">
       <el-col :span="24">
-        <el-button size="small" type="primary" @click="handleCreate">添加SPU</el-button>
+        <el-button type="primary" @click="handleCreate">添加SPU</el-button>
       </el-col>
     </el-row>
     <!-- 列表 -->

@@ -18,7 +18,7 @@
         >
         </el-option>
       </el-select>
-      <el-button class="ml-2" size="small" type="primary" @click="handleAddThemeSpu">添加SPU</el-button>
+      <el-button class="ml-2" type="primary" @click="handleAddThemeSpu">添加SPU</el-button>
     </div>
     <el-card class="spec-list__table" shadow="hover">
       <el-table :data="tableData" style="width: 100%">

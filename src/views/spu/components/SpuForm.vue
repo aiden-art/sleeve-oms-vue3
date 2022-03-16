@@ -1,6 +1,6 @@
 <template>
   <div class="spec-form">
-    <el-form ref="ELFormRef" size="small" :model="spuForm" :rules="spuFormRules">
+    <el-form ref="ELFormRef" :model="spuForm" :rules="spuFormRules">
       <el-row justify="space-between">
         <el-col :lg="11">
           <el-form-item label="标题" prop="title">

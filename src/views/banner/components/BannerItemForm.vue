@@ -1,6 +1,6 @@
 <template>
   <div class="banner-item-form">
-    <el-form ref="ELFormRef" size="small" :model="bannerItemForm" label-width="80px" :rules="bannerItemFormRules">
+    <el-form ref="ELFormRef" :model="bannerItemForm" label-width="80px" :rules="bannerItemFormRules">
       <el-form-item label="名称" prop="name">
         <el-input v-model="bannerItemForm.name" placeholder="请输入名称"></el-input>
       </el-form-item>
@@ -13,25 +13,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="图片" prop="img">
-        <div class="banner-form__upload flex">
-          <el-image
-            v-if="bannerItemForm.img"
-            style="width: 100px; height: 100px"
-            :src="bannerItemForm.img"
-            :preview-src-list="previewList"
-          ></el-image>
-          <el-upload
-            class="banner-form__upload ml-2"
-            action=""
-            list-type="picture-card"
-            :http-request="uploadImageToOSS"
-            :show-file-list="false"
-            :on-change="handleFileChange"
-            :before-upload="beforeUpload"
-          >
-            <el-icon><Plus /></el-icon>
-          </el-upload>
-        </div>
+        <ImageUpload v-model="bannerItemForm.img" :limit="1" />
       </el-form-item>
     </el-form>
   </div>
@@ -39,20 +21,16 @@
 
 <script lang="ts">
 import { defineComponent, computed, PropType, watch, reactive, toRefs } from 'vue'
-import { get as lodashGet } from 'lodash'
-import { Plus } from '@element-plus/icons'
-import { FileHandler, ElFile } from 'element-plus/lib/components/upload/src/upload.type'
-import { uploadFileToOSS } from '@/api/upload'
-import { ElMessage, ElForm } from 'element-plus'
-import { SUCCESS_CODE } from '@/config/constant'
+import { ElForm } from 'element-plus'
 import { BannerItemModel } from '@/api/banner'
+import ImageUpload from '@/components/ImageUpload/index.vue'
 
 type ELFormCtx = InstanceType<typeof ElForm>
 
 export default defineComponent({
   // banner操作表单，用于编辑和新增
   name: 'BannerItemForm',
-  components: { Plus },
+  components: { ImageUpload },
   props: {
     defaultData: {
       type: Object as PropType<null | BannerItemModel>,
@@ -82,7 +60,6 @@ export default defineComponent({
         img: '',
       } as BannerItemModel,
       ELFormRef: null as null | ELFormCtx,
-      fileList: [] as ElFile[],
     })
 
     const bannerItemFormRules = {
@@ -105,35 +82,6 @@ export default defineComponent({
     const previewList = computed(() => {
       return [state.bannerItemForm.img]
     })
-
-    const beforeUpload = () => {
-      return true
-    }
-
-    const handleFileChange: FileHandler = (file) => {
-      state.fileList = []
-      state.fileList.push(file.raw)
-    }
-
-    const uploadImageToOSS = async () => {
-      try {
-        const form = new FormData()
-        const file = state.fileList[0]
-        form.append('file', file)
-        const res = await uploadFileToOSS(form)
-        const code = lodashGet(res, 'data.code')
-        const message = lodashGet(res, 'data.message')
-        if (code === SUCCESS_CODE) {
-          state.bannerItemForm.img = res.data.data.url
-          ElMessage.success(`${message}`)
-        } else {
-          ElMessage.error(`${message}`)
-        }
-      } catch (e) {
-        console.log(e)
-        ElMessage.error('上传时发生错误')
-      }
-    }
 
     const handleSubmit = (): Promise<BannerItemModel> => {
       return new Promise((resolve) => {
@@ -172,9 +120,6 @@ export default defineComponent({
       ...toRefs(state),
       bannerItemFormRules,
       previewList,
-      beforeUpload,
-      uploadImageToOSS,
-      handleFileChange,
       handleSubmit,
       resetForm,
     }

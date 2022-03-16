@@ -20,12 +20,13 @@
 import { defineComponent, PropType, reactive, toRefs, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
-import { FileHandler, UploadFile } from 'element-plus/lib/components/upload/src/upload.type'
 import { get as lodashGet } from 'lodash'
 import { SUCCESS_CODE } from '@/config/constant'
 import { uploadFileToOSS, UploadResModel } from '@/api/upload'
 import { BaseResponseModel } from '@/api/apiTypes'
 import ImagePreview from '@/components/ImagePreview'
+
+import type { UploadFile } from 'element-plus'
 
 type ModelValueType = undefined | string | string[]
 
@@ -60,7 +61,7 @@ export default defineComponent({
       try {
         const form = new FormData()
         const file = state.file
-        if (file) {
+        if (file && file.raw) {
           form.append('file', file.raw)
           const res = await uploadFileToOSS(form)
           const code = lodashGet(res, 'data.code')
@@ -80,7 +81,7 @@ export default defineComponent({
       }
     }
 
-    const handleFileChange: FileHandler = (file) => {
+    const handleFileChange = (file: UploadFile) => {
       const fileResponse = file.response as null | BaseResponseModel<UploadResModel>
       //添加文件时
       if (!fileResponse) {

@@ -2,7 +2,7 @@
   <div class="banner-list">
     <!-- 查询 -->
     <el-card shadow="hover">
-      <el-form size="small" :inline="true" :model="queryForm" class="banner-list__query">
+      <el-form :inline="true" :model="queryForm" class="banner-list__query">
         <el-row :gutter="48">
           <el-col :md="8" :sm="24">
             <el-form-item class="container" label="ID">
@@ -23,8 +23,8 @@
           </template>
           <el-col :md="8" :sm="24">
             <span class="flex content-center">
-              <el-button class="font-normal" size="small" type="primary" @click="onQuery">查询</el-button>
-              <el-button class="font-normal" size="small" @click="onReset">重置</el-button>
+              <el-button class="font-normal" type="primary" @click="onQuery">查询</el-button>
+              <el-button class="font-normal" @click="onReset">重置</el-button>
               <el-link type="primary" class="ml-2 font-normal" :underline="false" @click="handleAnvanced">
                 <span class="flex items-center">
                   {{ isAdvanced ? '收起' : '展开' }}
@@ -53,7 +53,7 @@
     </el-dialog>
     <el-row class="mt-4">
       <el-col :span="24">
-        <el-button size="small" type="primary" @click="handleCreate">新增</el-button>
+        <el-button type="primary" @click="handleCreate">新增</el-button>
       </el-col>
     </el-row>
     <!-- 列表 -->
