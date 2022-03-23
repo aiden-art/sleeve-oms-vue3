@@ -5,6 +5,7 @@ export interface SkuSpecModel {
   key: string
   keyId: undefined | number
   valueId: undefined | number
+  value: string
 }
 
 export interface SkuModel {

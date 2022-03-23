@@ -51,7 +51,16 @@
         <template v-if="skuForm.specs && spuSpecList && spuSpecList.length > 0 && skuForm.specs.length > 0">
           <el-col v-for="(item, index) in skuForm.specs" :key="index" :lg="11">
             <el-form-item v-if="spuSpecList[index]" :label="`选择${item.key}`" :prop="`specs.${index}.valueId`">
-              <el-select v-model="item.valueId" class="w-full" placeholder="选择规格值">
+              <el-select
+                v-model="item.valueId"
+                class="w-full"
+                placeholder="选择规格值"
+                @change="
+                  (id) => {
+                    handleSpecsChange(id, spuSpecList[index], item)
+                  }
+                "
+              >
                 <el-option
                   v-for="specValue in spuSpecList[index].specValues"
                   :key="specValue.id"
@@ -73,10 +82,11 @@
 import { defineComponent, PropType, watch, reactive, toRefs, computed } from 'vue'
 import { ElMessage, ElForm } from 'element-plus'
 import ImageUpload from '@/components/ImageUpload/index.vue'
-import { SkuModel } from '@/api/sku'
+import { SkuModel, SkuSpecModel } from '@/api/sku'
 import { getSpuListApi, getSpuSpecApi, SpuModel, SpuSpecModel } from '@/api/spu'
 import { get as lodashGet } from 'lodash'
 import { SUCCESS_CODE } from '@/config/constant'
+import { SpecKeyModel } from '@/api/spec'
 
 type ELFormCtx = InstanceType<typeof ElForm>
 
@@ -150,15 +160,22 @@ export default defineComponent({
       }
     }
 
+    const handleSpecsChange = (id: number, specKeyItem: SpecKeyModel, specItem: SkuSpecModel) => {
+      const specValueItem = specKeyItem.specValues?.find((e) => e.id === id)
+      if (specValueItem) {
+        specItem.value = specValueItem.value
+      }
+    }
+
     const initSpecsData = () => {
       const skuSpecs = state.skuForm.specs
-      console.log('skuSpecs', skuSpecs)
       if (!skuSpecs || skuSpecs.length === 0) {
         state.spuSpecDetail.specKeys.forEach((item) => {
           state.skuForm.specs.push({
             key: item.name,
             keyId: item.id,
             valueId: undefined,
+            value: '',
           })
         })
       }
@@ -243,6 +260,7 @@ export default defineComponent({
       handleSubmit,
       resetForm,
       spuSpecList,
+      handleSpecsChange,
     }
   },
 })
